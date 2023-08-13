@@ -1,0 +1,28 @@
+{
+	"name": "blixter",
+	"version": "1.0.0",
+	"scripts": {
+		"dev": "turbo run dev",
+		"build": "turbo run build",
+		"lint": "prettier --write \"**/*.{ts,svelte}\" && eslint \"**/*.{ts,svelte}\" && turbo run lint",
+    "preview": "pnpm _clean && pnpm lint && pnpm build && turbo run preview",
+    "_clean": "rm -rf **/dist && rm -rf **/.sveltekit && rm -rf **/build"
+	},
+	"devDependencies": {
+		"@types/node": "^20.4.10",
+		"@typescript-eslint/eslint-plugin": "^6.3.0",
+		"@typescript-eslint/parser": "^6.3.0",
+		"autoprefixer": "^10.4.14",
+		"eslint": "^8.47.0",
+		"eslint-config-prettier": "^9.0.0",
+		"eslint-plugin-svelte": "^2.32.4",
+		"nodemon": "^3.0.1",
+		"postcss": "^8.4.27",
+		"prettier": "^3.0.1",
+		"prettier-plugin-svelte": "^3.0.3",
+		"tailwindcss": "^3.3.3",
+		"ts-node": "^10.9.1",
+		"turbo": "^1.10.12",
+		"typescript": "^5.1.6"
+	}
+}

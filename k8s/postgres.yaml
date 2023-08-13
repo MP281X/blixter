@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: blixter
+  labels: { app: postgres }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector: { matchLabels: { app: postgres } }
+  template:
+    metadata: { labels: { app: postgres } }
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:latest
+          ports: [containerPort: 5432]
+          env:
+            - { name: POSTGRES_USER, value: postgres }
+            - { name: POSTGRES_DB, value: postgres }
+            - { name: POSTGRES_PASSWORD, value: postgres }
+      #     volumeMounts: [{ name: data, mountPath: /var/lib/postgresql }]
+      # volumes:
+      #   - name: data
+      #     persistentVolumeClaim: { claimName: postgres }
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: blixter
+spec:
+  selector: { app: postgres }
+  ports: [{ port: 5432, name: postgres, targetPort: 5432 }]
+  clusterIP: 10.43.0.206

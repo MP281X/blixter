@@ -1,0 +1,7 @@
+#? ip range 10.43.0.200-10.43.0.210
+
+resources:
+  - frontend.yaml
+  - namespace.yaml
+  - postgres.yaml
+  - redis.yaml

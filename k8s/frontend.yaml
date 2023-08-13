@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend 
+  namespace: blixter
+  labels: { app: portfolio }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector: { matchLabels: { app: frontend } }
+  template:
+    metadata: { labels: { app: frontend } }
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/mp281x/blixter-frontend:latest
+          ports: [containerPort: 3000]
+          env:
+            - { name: REDIS_URL, value: 'redis://10.43.0.205:6379' }
+            - { name: POSTGRES_URL, value: 'postgresql://postgres:postgres@10.43.0.206:5432/postgres' }
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: blixter
+spec:
+  selector: { app: frontend }
+  ports: [{ port: 3000, name: frontend, targetPort: 3000 }]
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: frontend
+  namespace: blixter
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`blixter.mp281x.xyz`)
+      kind: Rule
+      services: [{ name: frontend, port: 3000 }]
