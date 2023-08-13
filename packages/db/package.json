@@ -1,0 +1,17 @@
+{
+	"name": "db",
+	"type": "module",
+	"main": "index.ts",
+	"types": "index.ts",
+	"scripts": {
+		"db": "drizzle-kit generate:pg && ts-node-esm migrate.ts && drizzle-kit studio"
+	},
+	"dependencies": {
+		"drizzle-orm": "^0.28.2",
+		"postgres": "^3.3.5"
+	},
+	"devDependencies": {
+		"drizzle-kit": "^0.19.12",
+		"pg": "^8.11.2"
+	}
+}
