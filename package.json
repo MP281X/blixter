@@ -5,9 +5,9 @@
 		"dev": "turbo daemon clean && turbo run dev",
 		"build": "turbo run build",
 		"lint": "prettier --write \"**/*.{ts,svelte}\" && eslint \"**/*.{ts,svelte}\" && turbo run lint",
-		"preview": "pnpm _clean && pnpm lint && pnpm build && turbo run preview",
+		"preview": "pnpm _clean && turbo daemon clean && pnpm lint && pnpm build && turbo run preview",
 		"db": "(cd ./packages/db && pnpm db)",
-		"_clean": "rm -rf **/dist && rm -rf **/.sveltekit && rm -rf **/build"
+		"_clean": "rm -rf **/.turbo && rm -rf **/dist && rm -rf **/.sveltekit && rm -rf **/build && find . -name '*.g.ts' -type f -delete"
 	},
 	"devDependencies": {
 		"@types/node": "^20.4.10",
