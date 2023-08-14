@@ -1,9 +1,17 @@
-.DS_Store
+# monorepo / node
+.turbo
 node_modules
+
+# generated
+dist
 build
+*.g.ts
 .svelte-kit
-package
+
+# env
 .env
+
+# others
+.DS_Store
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-.turbo
