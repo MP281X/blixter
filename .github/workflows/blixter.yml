@@ -29,7 +29,7 @@ jobs:
         run: pnpm install
  
       - name: Lint
-        run: pnpm lint
+        run: pnpm _lint
 
       - name: Cache turborepo
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
@@ -37,7 +37,7 @@ jobs:
           cache-prefix: turborepo_
 
       - name: Build
-        run: pnpm build
+        run: pnpm _build
 
       - name: Clean dependencies
         run: pnpm i --force -prod
@@ -55,3 +55,10 @@ jobs:
           push: true
           context: ./apps/frontend
           tags: ghcr.io/mp281x/blixter-frontend:latest
+      
+      - name: Docker (job-handler)
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          context: ./apps/job-handler
+          tags: ghcr.io/mp281x/job-handler:latest

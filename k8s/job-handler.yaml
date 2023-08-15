@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-handler
+  namespace: blixter
+  labels: { app: job-handler }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector: { matchLabels: { app: job-handler } }
+  template:
+    metadata: { labels: { app: job-handler } }
+    spec:
+      containers:
+        - name: job-handler
+          image: ghcr.io/mp281x/job-handler:latest
+          env:
+            - { name: REDIS_URL, value: 'redis://10.43.0.205:6379' }
+            - { name: POSTGRES_URL, value: 'postgresql://postgres:postgres@10.43.0.206:5432/postgres' }

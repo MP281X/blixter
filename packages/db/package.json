@@ -4,7 +4,7 @@
 	"main": "index.ts",
 	"types": "index.ts",
 	"scripts": {
-		"db": "drizzle-kit generate:pg && ts-node-esm migrate.ts && drizzle-kit studio"
+		"db": "drizzle-kit generate:pg && tsx migrate.ts && drizzle-kit studio"
 	},
 	"dependencies": {
 		"drizzle-orm": "^0.28.2",

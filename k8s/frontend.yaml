@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: frontend 
   namespace: blixter
-  labels: { app: portfolio }
+  labels: { app: frontend }
 spec:
   replicas: 1
   revisionHistoryLimit: 0

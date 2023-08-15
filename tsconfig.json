@@ -1,14 +1,15 @@
 {
-	"compilerOptions": {
-		"lib": ["esnext"],
-		"module": "esnext",
-		"target": "esnext",
-    "moduleResolution": "node",
-		"ignoreDeprecations": "5.0",
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "nodenext",
+    "ignoreDeprecations": "5.0",
     "strict": true,
     "allowJs": true,
 		"checkJs": true,
     "sourceMap": true,
+    "declaration": true,
     "skipLibCheck": true,
 		"esModuleInterop": true,
     "isolatedModules": true,
@@ -16,10 +17,5 @@
 		"preserveValueImports": true,
     "importsNotUsedAsValues": "error",
 		"forceConsistentCasingInFileNames": true,
-    "outDir": "./dist",
-    "rootDirs": ["."],
-		"paths": {
-			"$lib": [ "../src/lib" ],
-		},
 	},
 }

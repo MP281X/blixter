@@ -3,9 +3,9 @@
 	"version": "1.0.0",
 	"scripts": {
 		"dev": "turbo daemon clean && turbo run dev",
-		"build": "turbo run build",
-		"lint": "prettier --write \"**/*.{ts,svelte}\" && eslint \"**/*.{ts,svelte}\" && turbo run lint",
-		"preview": "pnpm _clean && turbo daemon clean && pnpm lint && pnpm build && turbo run preview",
+		"_build": "turbo run build",
+		"_lint": "prettier --write \"**/*.{ts,svelte}\" && eslint \"**/*.{ts,svelte}\" && turbo run lint",
+		"preview": "pnpm _clean && turbo daemon clean && pnpm _lint && pnpm _build && turbo run preview",
 		"db": "(cd ./packages/db && pnpm db)",
 		"_clean": "rm -rf **/.turbo && rm -rf **/dist && rm -rf **/.sveltekit && rm -rf **/build && find . -name '*.g.ts' -type f -delete"
 	},
@@ -22,7 +22,7 @@
 		"prettier": "^3.0.1",
 		"prettier-plugin-svelte": "^3.0.3",
 		"tailwindcss": "^3.3.3",
-		"ts-node": "^10.9.1",
+		"tsx": "^3.12.7",
 		"turbo": "^1.10.12",
 		"typescript": "^5.1.6"
 	},

@@ -2,7 +2,7 @@
 
 resources:
   - frontend.yaml
-  - kafka.yaml
+  - job-handler.yaml
   - namespace.yaml
   - postgres.yaml
   - redis.yaml

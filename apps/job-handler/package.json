@@ -1,0 +1,22 @@
+{
+	"name": "job-handler",
+	"type": "module",
+	"main": "dist/index.js",
+	"scripts": {
+		"dev": "nodemon",
+		"build": "tsc",
+		"preview": "node dist/index.js"
+	},
+	"nodemonConfig": {
+		"ext": ".ts",
+		"exec": "tsx index.ts",
+		"quiet": true,
+		"watch": [
+			"src/**",
+			"index.ts"
+		]
+	},
+	"dependencies": {
+		"bullmq": "^4.7.2"
+	}
+}
