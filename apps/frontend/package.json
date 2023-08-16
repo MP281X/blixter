@@ -3,8 +3,8 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build",
-		"lint": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"build": "svelte-kit sync && vite build",
+		"lint": "svelte-check --tsconfig ./tsconfig.json",
 		"preview": "node build"
 	},
 	"devDependencies": {
@@ -16,6 +16,8 @@
 		"vite": "^4.4.2"
 	},
 	"dependencies": {
-		"db": "workspace:*"
+		"bullmq": "^4.7.2",
+		"db": "workspace:*",
+		"jobs": "workspace:*"
 	}
 }

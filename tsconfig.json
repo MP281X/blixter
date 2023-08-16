@@ -8,8 +8,6 @@
     "strict": true,
     "allowJs": true,
 		"checkJs": true,
-    "sourceMap": true,
-    "declaration": true,
     "skipLibCheck": true,
 		"esModuleInterop": true,
     "isolatedModules": true,

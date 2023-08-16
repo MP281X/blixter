@@ -1,9 +1,9 @@
 {
 	"$schema": "https://turbo.build/schema.json",
 	"pipeline": {
-    "dev": { "cache": false },
-    "lint": {},
-		"build": { "outputs": ["dist/**", ".sveltekit/**", "build/**"] },
-    "preview": {}
+		"dev": { "cache": false },
+		"lint": { "cache": false },
+		"build": { "outputs": ["dist/**", ".sveltekit/**", "build/**"], "cache": false },
+		"preview": { "cache": false }
 	}
 }

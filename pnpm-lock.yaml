@@ -60,9 +60,15 @@ importers:
 
   apps/frontend:
     dependencies:
+      bullmq:
+        specifier: ^4.7.2
+        version: 4.7.2
       db:
         specifier: workspace:*
         version: link:../../packages/db
+      jobs:
+        specifier: workspace:*
+        version: link:../../packages/jobs
     devDependencies:
       '@sveltejs/adapter-node':
         specifier: ^1.3.1
@@ -83,7 +89,7 @@ importers:
         specifier: ^4.4.2
         version: 4.4.9(@types/node@20.4.10)
 
-  apps/job-handler:
+  apps/jobs-handler:
     dependencies:
       bullmq:
         specifier: ^4.7.2
@@ -104,6 +110,12 @@ importers:
       pg:
         specifier: ^8.11.2
         version: 8.11.2
+
+  packages/jobs:
+    dependencies:
+      bullmq:
+        specifier: ^4.7.2
+        version: 4.7.2
 
 packages:
 

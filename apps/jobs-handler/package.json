@@ -1,5 +1,5 @@
 {
-	"name": "job-handler",
+	"name": "jobs-handler",
 	"type": "module",
 	"main": "dist/index.js",
 	"scripts": {
@@ -14,6 +14,9 @@
 		"watch": [
 			"src/**",
 			"index.ts"
+		],
+		"ignore": [
+			"**/*.g.ts"
 		]
 	},
 	"dependencies": {
