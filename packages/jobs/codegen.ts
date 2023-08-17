@@ -2,6 +2,7 @@ import fs from 'fs';
 
 const generatedData: string[] = [];
 generatedData.unshift("import { Queue } from 'bullmq';");
+generatedData.unshift("if (process.env.NODE_ENV !== 'production') await import('dotenv/config');");
 generatedData.unshift("const redisUrl = (process.env.REDIS_URL ?? '').replace('redis://', '')");
 
 const basePath = '../../apps/jobs-handler/src';

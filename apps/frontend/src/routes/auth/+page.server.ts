@@ -1,8 +1,9 @@
-import { user } from 'cache';
+import type { PageServerLoad } from './$types';
+import { userCache } from 'cache';
 
-export const load = async () => {
-	await user('user1', { username: 'user1' });
-	const get = await user('user1');
+export const load: PageServerLoad = async () => {
+	await userCache('user1', { username: 'user1' });
+	const get = await userCache('user1');
 
 	return get;
 };

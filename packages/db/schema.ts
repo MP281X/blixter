@@ -1,5 +1,5 @@
 import { text, pgTable, uuid, varchar, boolean } from 'drizzle-orm/pg-core';
-import { createInsertSchema } from 'drizzle-zod';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
 type Schema = {
@@ -20,8 +20,12 @@ export const usersSchema = {
 	add: createInsertSchema(users, {
 		username: z.string().min(5).max(20).toLowerCase().trim(),
 		email: z.string().email().toLowerCase().trim(),
-		password: z.string().min(5),
+		password: z.string().min(5).max(30),
 		verified: z.literal(true).optional()
+	}),
+	select: createSelectSchema(users, {
+		username: z.string().min(5).max(20).toLowerCase().trim(),
+		password: z.string().min(5).max(30)
 	})
 } satisfies Schema;
 

@@ -1,4 +1,5 @@
 import { createClient, type RedisClientType } from 'redis';
+if (process.env.NODE_ENV !== 'production') await import('dotenv/config');
 
 let redis: RedisClientType;
 
@@ -13,6 +14,7 @@ if (process.env.REDIS_URL) {
 const getSet =
 	<T extends Record<string, unknown>>(name: string) =>
 	async (key: string, value?: T) => {
+		if (typeof key !== 'string') return;
 		try {
 			if (!value) {
 				const res = await redis.json.get(`${name}:${key}`);
@@ -25,4 +27,4 @@ const getSet =
 		} catch (_) {}
 	};
 
-export const user = getSet<{ username: string }>('user');
+export const userCache = getSet<{ username: string }>('user');
