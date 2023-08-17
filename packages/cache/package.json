@@ -1,0 +1,10 @@
+{
+	"name": "cache",
+	"type": "module",
+	"main": "index.ts",
+	"types": "index.ts",
+	"scripts": {},
+	"dependencies": {
+		"redis": "^4.6.7"
+	}
+}

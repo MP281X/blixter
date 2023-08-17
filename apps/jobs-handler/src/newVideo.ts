@@ -1,6 +1,7 @@
 type Input = {
-	a: string;
-	b: number;
+	id: string;
+	name: string;
+	url: string;
 };
 
 export default (data: Input) => {
