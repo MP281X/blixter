@@ -16,5 +16,6 @@ COPY apps/frontend/node_modules ./apps/frontend/node_modules
 COPY apps/frontend/build ./apps/frontend/build
 
 # run the app
-ENV port 3000
+ENV HOST 0.0.0.0
+ENV PORT 3000
 CMD [ "node", "/app/apps/frontend/build" ]

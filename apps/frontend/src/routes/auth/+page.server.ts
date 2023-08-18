@@ -1,6 +1,5 @@
 import bcrypt from 'bcrypt';
 import { userCache } from 'cache';
-import { dev } from '$app/environment';
 import { zodSchema } from '$lib/zodHelper';
 import { usersSchema, users, db } from 'db';
 import { error, redirect } from '@sveltejs/kit';
@@ -29,8 +28,8 @@ export const actions: Actions = {
 		cookies.set('auth_token', token, {
 			path: '/',
 			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
 			sameSite: 'strict',
-			secure: !dev,
 			maxAge: 60 * 60 * 24
 		});
 
@@ -52,8 +51,8 @@ export const actions: Actions = {
 		cookies.set('auth_token', token, {
 			path: '/',
 			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
 			sameSite: 'strict',
-			secure: !dev,
 			maxAge: 60 * 60 * 24
 		});
 
