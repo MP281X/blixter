@@ -15,6 +15,20 @@
       "when": 1692205499021,
       "tag": "0001_parched_kang",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1692352786710,
+      "tag": "0002_neat_blink",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1692354430421,
+      "tag": "0003_flat_blazing_skull",
+      "breakpoints": true
     }
   ]
 }

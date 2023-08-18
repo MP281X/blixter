@@ -1,4 +1,5 @@
 import { createClient, type RedisClientType } from 'redis';
+import crypto from 'crypto';
 if (process.env.NODE_ENV !== 'production') await import('dotenv/config');
 
 let redis: RedisClientType;
@@ -11,20 +12,34 @@ if (process.env.REDIS_URL) {
 	await redis.connect();
 }
 
+type ResType<Value extends Record<string, unknown> | undefined, T> = Promise<(Value extends undefined ? T : string) | undefined>;
+
 const getSet =
 	<T extends Record<string, unknown>>(name: string) =>
-	async (key: string, value?: T) => {
+	async <Value extends T | undefined = undefined>(
+		key: 'uuid' | (string & {}), // eslint-disable-line
+		value?: Value,
+		expire?: number
+	): ResType<Value, T> => {
 		if (typeof key !== 'string') return;
 		try {
 			if (!value) {
 				const res = await redis.json.get(`${name}:${key}`);
 
-				if (res) return res as any as T;
+				if (expire) await redis.expire(`${name}:${key}`, expire);
+
+				if (res) return res as any;
 			} else {
-				const res = await redis.json.set(`${name}:${key}`, '$', value as any);
-				if (res) return value;
+				const _key = key === 'uuid' ? crypto.randomUUID().toString() : key;
+				const res = await redis.json.set(`${name}:${_key}`, '$', value as any);
+
+				if (expire) await redis.expire(`${name}:${_key}`, expire);
+
+				if (res) return _key as any;
 			}
 		} catch (_) {}
+
+		return undefined;
 	};
 
 export const userCache = getSet<{ username: string }>('user');
