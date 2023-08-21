@@ -2,4 +2,6 @@
 	import '../app.css';
 </script>
 
-<slot />
+<main class="font-regular scroll-smooth text-xl">
+	<slot />
+</main>
