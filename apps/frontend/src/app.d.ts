@@ -6,7 +6,7 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
-			user?: Awaited<ReturnType<typeof userCache>>;
+			user: Exclude<Awaited<ReturnType<typeof userCache>>, string | undefined>;
 		}
 		// interface PageData {}
 		// interface Platform {}

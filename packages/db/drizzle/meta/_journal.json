@@ -29,6 +29,20 @@
       "when": 1692354430421,
       "tag": "0003_flat_blazing_skull",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1692642271470,
+      "tag": "0004_lowly_the_hunter",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1692643338068,
+      "tag": "0005_famous_siren",
+      "breakpoints": true
     }
   ]
 }

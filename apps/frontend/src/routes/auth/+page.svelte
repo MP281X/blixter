@@ -1,16 +1,24 @@
 <script lang="ts">
+	import FormHandler from '$lib/formHandler.svelte';
+
 	export let data;
+	export let form;
+
+	export let login: boolean = true;
 </script>
 
-<form action="?/login" method="post" class="flex flex-col space-y-2 h-[100dvh] w-full bg-primary justify-center items-center">
-	<input type="text" placeholder={data.loginSchema.username} name={data.loginSchema.username} />
-	<input type="password" placeholder={data.loginSchema.password} name={data.loginSchema.password} />
-	<button type="submit" class="bg-secondary px-14 py-1">Login</button>
-</form>
-
-<form action="?/signup" method="post" class="flex flex-col space-y-2 h-[100dvh] w-full bg-primary justify-center items-center">
-	<input type="text" placeholder={data.signupSchema.username} name={data.signupSchema.username} />
-	<input type="text" placeholder={data.signupSchema.email} name={data.signupSchema.email} />
-	<input type="password" placeholder={data.signupSchema.password} name={data.signupSchema.password} />
-	<button type="submit" class="bg-secondary px-14 py-1">SignUp</button>
-</form>
+<div class="flex h-screen w-full flex-col items-center justify-center">
+	{#if login}
+		<FormHandler action="login" schema={data.loginSchema} errors={form} btn_text="Log In"></FormHandler>
+		<button class="text-grey group mt-2 text-sm transition-colors duration-100 ease-in hover:text-black" on:click={() => (login = false)}>
+			Don't have an account?
+			<span class="group-hover:text-orange underline">Sign up</span>
+		</button>
+	{:else}
+		<FormHandler action="signup" schema={data.signupSchema} errors={form} btn_text="Sign up"></FormHandler>
+		<button class="text-grey group mt-2 text-sm transition-colors duration-100 ease-in hover:text-black" on:click={() => (login = true)}>
+			Already have an account?
+			<span class="group-hover:text-orange underline">Log In</span>
+		</button>
+	{/if}
+</div>

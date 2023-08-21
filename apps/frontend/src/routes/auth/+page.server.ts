@@ -1,61 +1,71 @@
 import bcrypt from 'bcrypt';
 import { userCache } from 'cache';
-import { zodSchema } from '$lib/zodHelper';
+import { formatDbError, formatZodError, zodDefault } from '$lib/helpers';
 import { usersSchema, users, db } from 'db';
-import { error, redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
-const loginSchema = zodSchema(usersSchema.select.shape);
-const signupSchema = zodSchema(usersSchema.add.shape);
+const loginSchema = zodDefault(usersSchema.select.shape);
+const signupSchema = zodDefault(usersSchema.add.shape);
 
 export const load: PageServerLoad = async () => {
-	return { loginSchema, signupSchema };
+  return { loginSchema, signupSchema };
 };
 
 export const actions: Actions = {
-	login: async ({ request, cookies }) => {
-		const data = usersSchema.select.parse(Object.fromEntries(await request.formData()));
+  login: async ({ request, cookies }) => {
+    const formData = usersSchema.select.safeParse(Object.fromEntries(await request.formData()));
 
-		const res = await db.query.users.findFirst({
-			where: (users, { eq }) => eq(users.username, data.username)
-		});
+    if (!formData.success) return formatZodError(formData.error);
+    const data = formData.data;
 
-		if (!res || !(await bcrypt.compare(data.password, res.password))) throw error(400, 'invalid username or password');
+    const res = await db.query.users.findFirst({
+      where: (users, { eq }) => eq(users.username, data.username)
+    });
 
-		const token = await userCache('uuid', { username: res.username }, 60 * 60 * 24);
+    if (!res || !(await bcrypt.compare(data.password, res.password))) return fail(400, { error: 'invalid username or password' });
 
-		if (!token) throw error(500, 'unable to login');
-		cookies.set('auth_token', token, {
-			path: '/',
-			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
-			sameSite: 'strict',
-			maxAge: 60 * 60 * 24
-		});
+    const token = await userCache('uuid', { username: res.username }, 60 * 60 * 24);
 
-		throw redirect(303, '/');
-	},
-	signup: async ({ request, cookies }) => {
-		const data = usersSchema.add.parse(Object.fromEntries(await request.formData()));
+    if (!token) return fail(500, { error: 'unable to login' });
+    cookies.set('auth_token', token, {
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24
+    });
 
-		const hash = await bcrypt.hash(data.password, 10);
-		await db.insert(users).values({
-			username: data.username,
-			email: data.email,
-			password: hash
-		});
+    throw redirect(303, '/');
+  },
+  signup: async ({ request, cookies }) => {
+    const formData = usersSchema.add.safeParse(Object.fromEntries(await request.formData()));
 
-		const token = await userCache('uuid', { username: data.username }, 60 * 60 * 24);
+    if (!formData.success) return formatZodError(formData.error);
+    const data = formData.data;
 
-		if (!token) throw error(500, 'unable to login');
-		cookies.set('auth_token', token, {
-			path: '/',
-			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
-			sameSite: 'strict',
-			maxAge: 60 * 60 * 24
-		});
+    const hash = await bcrypt.hash(data.password, 10);
+    try {
+      await db.insert(users).values({
+        username: data.username,
+        email: data.email,
+        password: hash
+      });
+    } catch (e) {
+      return formatDbError(e);
+    }
 
-		throw redirect(303, '/');
-	}
+    const token = await userCache('uuid', { username: data.username }, 60 * 60 * 24);
+
+    if (!token) return fail(500, { error: 'invalid username or password' });
+    cookies.set('auth_token', token, {
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24
+    });
+
+    throw redirect(303, '/');
+  }
 };
