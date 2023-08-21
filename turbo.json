@@ -3,7 +3,7 @@
 	"pipeline": {
 		"dev": { "cache": false },
 		"lint": { "cache": false },
-		"build": { "outputs": ["dist/**", ".sveltekit/**", "build/**"], "cache": false },
+		"build": { "outputs": ["dist/**", ".sveltekit/**", "build/**", "*.g.ts"], "cache": false },
 		"preview": { "cache": false }
 	}
 }
