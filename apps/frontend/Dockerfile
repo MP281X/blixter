@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:20-bookworm-slim
 ENV NODE_ENV production
 WORKDIR /app
 
