@@ -21,7 +21,11 @@
 	};
 </script>
 
-<form use:enhance action={`?/${action}`} method="post" class="font-regular flex w-[200px] flex-col items-center justify-center space-y-2 text-xl">
+<form
+	use:enhance
+	action={`?/${action}`}
+	method="post"
+	class="font-regular flex w-[230px] flex-col items-center justify-center space-y-2 border-4 border-black bg-white p-5 text-xl">
 	{#each Object.entries(schema) as [key, value]}
 		<div>
 			<input
@@ -47,4 +51,6 @@
 	{#if errors && errors['error']}
 		<div class="text-orange text-xs">{errors['error']}</div>
 	{/if}
+
+	<slot />
 </form>

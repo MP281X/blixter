@@ -1,3 +1,6 @@
+// eslint-disable-next-line
+const { iconsPlugin, getIconCollections } = require('@egoist/tailwindcss-icons');
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
@@ -15,5 +18,5 @@ export default {
     fontWeight: {},
     extend: {}
   },
-  plugins: []
+  plugins: [iconsPlugin({ collections: getIconCollections(['ph']) })]
 };

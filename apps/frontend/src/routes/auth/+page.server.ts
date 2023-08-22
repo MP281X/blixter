@@ -8,7 +8,12 @@ import type { Actions, PageServerLoad } from './$types';
 const loginSchema = zodDefault(usersSchema.select.shape);
 const signupSchema = zodDefault(usersSchema.add.shape);
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ cookies }) => {
+	const token = cookies.get('auth_token');
+	if (token) {
+		cookies.delete('auth_token');
+		await userCache(token, undefined, 'delete');
+	}
 	return { loginSchema, signupSchema };
 };
 
