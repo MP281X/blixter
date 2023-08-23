@@ -1,9 +1,6 @@
 import fs from 'fs';
 
 const generatedData: string[] = [];
-generatedData.unshift("import { Queue } from 'bullmq';");
-generatedData.unshift("if (process.env.NODE_ENV !== 'production') await import('dotenv/config');");
-generatedData.unshift("const redisUrl = (process.env.REDIS_URL ?? '').replace('redis://', '')");
 
 const basePath = '../../apps/jobs-handler/src';
 const fileList = fs.readdirSync(`${basePath}/`);
@@ -26,5 +23,9 @@ for (const file of fileList) {
 
 	console.log(`generated handler for the job '${jobName}`);
 }
+
+generatedData.unshift("const redisUrl = (process.env.REDIS_URL ?? '').replace('redis://', '').split(':')");
+generatedData.unshift("if (process.env.NODE_ENV !== 'production') await import('dotenv/config');");
+generatedData.unshift("import { Queue } from 'bullmq';");
 
 fs.writeFileSync('./index.g.ts', generatedData.join('\n'));

@@ -20,6 +20,8 @@
 		]
 	},
 	"dependencies": {
-		"bullmq": "^4.7.2"
+		"bullmq": "^4.7.2",
+		"db": "workspace:*",
+		"s3": "workspace:*"
 	}
 }

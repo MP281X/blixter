@@ -1,5 +1,3 @@
-import 'db';
-
 import { redirect, type Handle } from '@sveltejs/kit';
 import { userCache } from 'cache';
 

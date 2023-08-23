@@ -21,6 +21,7 @@ export const uploadUrl = async (type: FileType) => {
 
 	const fileInfo = new PutObjectCommand({
 		Bucket: 'blixter',
+
 		Key: `${type}/${id}`
 	});
 

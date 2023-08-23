@@ -5,6 +5,7 @@ export const zodDefault = <T extends z.ZodObject<z.ZodRawShape>['shape']>(object
 	const shape = {} as Record<string, unknown>;
 
 	for (const [key, value] of Object.entries(object)) {
+		if (key[0] === '_') continue;
 		const typeName = value._def.typeName;
 
 		if (typeName === 'ZodString') shape[key] = '';
@@ -17,14 +18,6 @@ export const zodDefault = <T extends z.ZodObject<z.ZodRawShape>['shape']>(object
 	}
 
 	return shape as { [K in keyof T]: T[K]['_output'] };
-};
-
-export const zodSchema = <T extends z.ZodObject<z.ZodRawShape>['shape']>(object: T) => {
-	const shape = {} as Record<string, unknown>;
-
-	for (const key of Object.keys(object)) shape[key] = key;
-
-	return shape as { [K in keyof T]: K };
 };
 
 export const formatZodError = <Err extends z.ZodError>(

@@ -8,20 +8,17 @@
 
 	const inputStyle = (key: string, value: unknown) => {
 		const valueType = typeof value;
-		let style: { type: 'text' | 'password' | 'email' | 'tel' | 'file' | 'number' | 'checkbox'; icon: string };
+		let style: { type: 'text' | 'password' | 'email' | 'tel' | 'number' | 'checkbox'; icon: string };
 
 		if (key === 'password') style = { type: 'password', icon: 'i-ph-password-bold' };
 		else if (key === 'email') style = { type: 'email', icon: 'i-ph-envelope-simple-bold' };
 		else if (key.includes('tel')) style = { type: 'tel', icon: 'i-ph-phone-bold' };
-		else if (key === 'video') style = { type: 'file', icon: 'i-ph-file-video-bold' };
 		else if (valueType === 'number') style = { type: 'number', icon: 'i-ph-calculator-bold' };
 		else if (valueType === 'boolean') style = { type: 'checkbox', icon: 'i-ph-check-square-bold' };
 		else style = { type: 'text', icon: 'i-ph-text-align-left-bold' };
 
 		return style;
 	};
-
-	let files: FileList;
 </script>
 
 <form
@@ -34,26 +31,16 @@
 		<div class="flex w-full flex-col">
 			<div class={`${errors && errors[key] ? 'border-orange' : 'border-grey'} flex h-8 w-full items-center justify-start border-b-2`}>
 				<label for={key} class={`${style.icon} ${errors && errors[key] ? 'text-orange' : 'text-grey'} mr-2 w-5`} />
-				{#if style.type === 'file'}
-					<input type="file" accept=".mp4" name={key} id={key} class="hidden" bind:files />
-					<label for={key} class={`w-full ${files && files.length === 1 ? 'text-black' : 'text-grey'}`}
-						>{(() => {
-							if (!files || files.length !== 1) return 'select video';
-							if (files[0].name.length > 15) return files[0].name.slice(0, 12) + '...';
-							return files[0].name;
-						})()}</label>
-				{:else}
-					<input
-						placeholder={key}
-						id={key}
-						name={key}
-						type={style.type}
-						on:input={() => {
-							if (errors && errors[key]) delete errors[key];
-							errors = errors;
-						}}
-						class="placeholder-grey h-full w-full bg-none outline-none" />
-				{/if}
+				<input
+					placeholder={key}
+					id={key}
+					name={key}
+					type={style.type}
+					on:input={() => {
+						if (errors && errors[key]) delete errors[key];
+						errors = errors;
+					}}
+					class="placeholder-grey h-full w-full bg-none outline-none" />
 			</div>
 
 			{#if errors && errors[key]}
