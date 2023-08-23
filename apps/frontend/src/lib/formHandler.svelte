@@ -6,19 +6,22 @@
 	export let btn_text: string;
 	export let errors: Record<string, any> | null;
 
-	const inputType = (key: string, value: unknown) => {
-		let type: string = typeof value;
+	const inputStyle = (key: string, value: unknown) => {
+		const valueType = typeof value;
+		let style: { type: 'text' | 'password' | 'email' | 'tel' | 'file' | 'number' | 'checkbox'; icon: string };
 
-		if (key.includes('password')) type = 'password';
-		else if (key.includes('email')) type = 'email';
-		else if (key.includes('tel')) type = 'tel';
-		else if (key.includes('file')) type = 'file';
-		else if (type === 'number') type = 'number';
-		else if (type === 'boolean') type = 'checkbox';
-		else type = 'text';
+		if (key === 'password') style = { type: 'password', icon: 'i-ph-password-bold' };
+		else if (key === 'email') style = { type: 'email', icon: 'i-ph-envelope-simple-bold' };
+		else if (key.includes('tel')) style = { type: 'tel', icon: 'i-ph-phone-bold' };
+		else if (key === 'video') style = { type: 'file', icon: 'i-ph-file-video-bold' };
+		else if (valueType === 'number') style = { type: 'number', icon: 'i-ph-calculator-bold' };
+		else if (valueType === 'boolean') style = { type: 'checkbox', icon: 'i-ph-check-square-bold' };
+		else style = { type: 'text', icon: 'i-ph-text-align-left-bold' };
 
-		return type;
+		return style;
 	};
+
+	let files: FileList;
 </script>
 
 <form
@@ -27,16 +30,32 @@
 	method="post"
 	class="font-regular flex w-[230px] flex-col items-center justify-center space-y-2 border-4 border-black bg-white p-5 text-xl">
 	{#each Object.entries(schema) as [key, value]}
-		<div>
-			<input
-				placeholder={key}
-				name={key}
-				type={inputType(key, value)}
-				on:input={() => {
-					if (errors && errors[key]) delete errors[key];
-					errors = errors;
-				}}
-				class="border-grey w-full border-b-2 bg-none outline-none focus:border-black" />
+		{@const style = inputStyle(key, value)}
+		<div class="flex w-full flex-col">
+			<div class={`${errors && errors[key] ? 'border-orange' : 'border-grey'} flex h-8 w-full items-center justify-start border-b-2`}>
+				<label for={key} class={`${style.icon} ${errors && errors[key] ? 'text-orange' : 'text-grey'} mr-2 w-5`} />
+				{#if style.type === 'file'}
+					<input type="file" accept=".mp4" name={key} id={key} class="hidden" bind:files />
+					<label for={key} class={`w-full ${files && files.length === 1 ? 'text-black' : 'text-grey'}`}
+						>{(() => {
+							if (!files || files.length !== 1) return 'select video';
+							if (files[0].name.length > 15) return files[0].name.slice(0, 12) + '...';
+							return files[0].name;
+						})()}</label>
+				{:else}
+					<input
+						placeholder={key}
+						id={key}
+						name={key}
+						type={style.type}
+						on:input={() => {
+							if (errors && errors[key]) delete errors[key];
+							errors = errors;
+						}}
+						class="placeholder-grey h-full w-full bg-none outline-none" />
+				{/if}
+			</div>
+
 			{#if errors && errors[key]}
 				<div class="text-orange text-xs">{errors[key]}</div>
 			{/if}

@@ -13,6 +13,7 @@ export const zodDefault = <T extends z.ZodObject<z.ZodRawShape>['shape']>(object
 		else if (typeName === 'ZodBoolean') shape[key] = false;
 		else if (typeName === 'ZodEnum') shape[key] = value._def.values[0];
 		else if (typeName === 'ZodDefault') shape[key] = value._def.defaultValue();
+		else if (typeName === 'ZodEffects') shape[key] = undefined;
 	}
 
 	return shape as { [K in keyof T]: T[K]['_output'] };
@@ -48,5 +49,9 @@ export const formatDbError = (err: any): ActionFailure<{ error: string }> => {
 		error = `${constraint[constraint.length - 2]} already used`;
 	}
 
+	return fail(400, { error });
+};
+
+export const formatError = (error: string) => {
 	return fail(400, { error });
 };

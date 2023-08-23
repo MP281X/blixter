@@ -1,12 +1,9 @@
 import bcrypt from 'bcrypt';
 import { userCache } from 'cache';
 import { formatDbError, formatZodError, zodDefault } from '$lib/helpers';
-import { usersSchema, users, db } from 'db';
+import { newUserSchema, findUserSchema, users, db } from 'db';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-
-const loginSchema = zodDefault(usersSchema.select.shape);
-const signupSchema = zodDefault(usersSchema.add.shape);
 
 export const load: PageServerLoad = async ({ cookies }) => {
 	const token = cookies.get('auth_token');
@@ -14,12 +11,12 @@ export const load: PageServerLoad = async ({ cookies }) => {
 		cookies.delete('auth_token');
 		await userCache(token, undefined, 'delete');
 	}
-	return { loginSchema, signupSchema };
+	return { newUserSchema: zodDefault(newUserSchema.shape), findUserSchema: zodDefault(findUserSchema.shape) };
 };
 
 export const actions: Actions = {
 	login: async ({ request, cookies }) => {
-		const formData = usersSchema.select.safeParse(Object.fromEntries(await request.formData()));
+		const formData = findUserSchema.safeParse(Object.fromEntries(await request.formData()));
 
 		if (!formData.success) return formatZodError(formData.error);
 		const data = formData.data;
@@ -44,7 +41,7 @@ export const actions: Actions = {
 		throw redirect(303, '/');
 	},
 	signup: async ({ request, cookies }) => {
-		const formData = usersSchema.add.safeParse(Object.fromEntries(await request.formData()));
+		const formData = newUserSchema.safeParse(Object.fromEntries(await request.formData()));
 
 		if (!formData.success) return formatZodError(formData.error);
 		const data = formData.data;

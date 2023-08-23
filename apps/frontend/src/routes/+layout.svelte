@@ -6,23 +6,27 @@
 	page.subscribe(() => (profileDialog = false));
 </script>
 
-<main class="font-regular flex min-h-[100dvh] flex-col scroll-smooth text-xl">
-	<nav class="flex h-16 items-center justify-between border-b-4 border-b-black bg-white px-5 text-3xl font-bold">
+<main class="font-regular grid min-h-[100dvh] grid-rows-[3.5rem_1fr] scroll-smooth text-xl">
+	<header class="flex items-center justify-between border-b-4 border-b-black bg-white px-5 text-3xl font-bold">
 		<a href="/" class="font-bold">Blixter</a>
 		{#if $page.route.id !== '/auth'}
-			<button class="i-ph-user-focus-bold" on:click={() => (profileDialog = !profileDialog)} />
+			<nav class="flex items-center justify-center space-x-5">
+				<a href="/upload" class="i-ph-film-slate-bold"> </a>
+				<button class="i-ph-user-focus-bold" on:click={() => (profileDialog = !profileDialog)} />
+			</nav>
 		{/if}
-	</nav>
-	{#if profileDialog}
-		<button on:click={() => (profileDialog = false)} class="fixed h-[100dvh] w-full">
-			<div id="profile-dialog" class="fixed right-5 top-12 flex border-4 border-black bg-white p-3">
-				<a href="/auth" class="flex items-center justify-start font-bold"><span class="i-ph-sign-out-bold mr-2 text-lg" />Log out</a>
-			</div>
-		</button>
-	{/if}
+	</header>
 
 	<slot />
 </main>
+
+{#if profileDialog}
+	<button on:click={() => (profileDialog = false)} class="fixed h-[100dvh] w-full">
+		<div id="profile-dialog" class="fixed right-5 top-12 flex border-4 border-black bg-white p-3 text-xl">
+			<a href="/auth" class="flex items-center justify-start font-bold"><span class="i-ph-sign-out-bold mr-2 text-xl" />Log out</a>
+		</div>
+	</button>
+{/if}
 
 <style lang="css">
 	main {
