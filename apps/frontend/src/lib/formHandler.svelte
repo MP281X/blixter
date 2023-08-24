@@ -48,8 +48,8 @@
 			{/if}
 		</div>
 	{/each}
-
 	<div />
+
 	<button type="submit" class="btn-animation w-full border-2 py-1 text-2xl font-bold text-white">
 		{btn_text}
 	</button>

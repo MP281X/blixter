@@ -11,7 +11,7 @@
 		<a href="/" class="font-bold">Blixter</a>
 		{#if $page.route.id !== '/auth'}
 			<nav class="flex items-center justify-center space-x-5">
-				<a href="/upload" class="i-ph-film-slate-bold"> </a>
+				<a href="/upload/video" class="i-ph-film-slate-bold"> </a>
 				<button class="i-ph-user-focus-bold" on:click={() => (profileDialog = !profileDialog)} />
 			</nav>
 		{/if}

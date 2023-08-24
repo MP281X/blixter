@@ -1,4 +1,4 @@
-import { text, pgTable, uuid, varchar, boolean, pgEnum } from 'drizzle-orm/pg-core';
+import { text, pgTable, uuid, varchar, boolean } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
@@ -26,7 +26,8 @@ export const findUserSchema = createSelectSchema(users, {
 // video
 export const videos = pgTable('videos', {
 	id: uuid('id').defaultRandom().primaryKey(),
-	format: pgEnum('video_format', ['mp4'])('format').notNull(),
-	name: varchar('name', { length: 20 }).notNull(),
-	description: text('description').notNull()
+	format: varchar('format', { length: 10 }).notNull(),
+	name: varchar('name', { length: 20 }).notNull().unique(),
+	description: text('description').notNull(),
+	converted: boolean('converted').default(false).notNull()
 });

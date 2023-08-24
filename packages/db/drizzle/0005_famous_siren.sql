@@ -1,1 +1,0 @@
-ALTER TABLE "user" ALTER COLUMN "email" SET DATA TYPE varchar(50);

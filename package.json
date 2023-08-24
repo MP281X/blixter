@@ -1,6 +1,7 @@
 {
 	"name": "blixter",
 	"version": "1.0.0",
+  "engines" : { "node" : ">=20.0.0" },
 	"scripts": {
 		"dev": "pnpm _clean && turbo run dev",
 		"preview": "pnpm _clean && pnpm _build && pnpm _lint && clear && turbo run preview",

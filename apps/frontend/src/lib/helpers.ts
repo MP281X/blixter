@@ -25,7 +25,10 @@ export const formatZodError = <Err extends z.ZodError>(
 ): ActionFailure<Err extends z.ZodError<infer Res> ? Record<keyof Res, string> : never> => {
 	const errors: Record<string, string> = {};
 
-	error.errors.forEach((err) => (errors[err.path[0]] = err.message));
+	error.errors.forEach((err) => {
+		if ((err.path[0] as string)[0] === '_') errors['error'] = `${(err.path[0] as string).slice(1)} is ${err.message}`;
+		else errors[err.path[0]] = err.message;
+	});
 
 	return fail(400, errors) as any;
 };

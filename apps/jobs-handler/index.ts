@@ -1,6 +1,7 @@
-import 'dotenv/config';
 import fs from 'fs';
 import { Worker } from 'bullmq';
+
+if (process.env.NODE_ENV !== 'production') await import('dotenv/config');
 
 const redisUrl = process.env.REDIS_URL!.replace('redis://', '').split(':');
 
@@ -9,12 +10,16 @@ const fileList = fs.readdirSync(currentPath);
 for (const file of fileList) {
 	if (fs.statSync(`${currentPath}/${file}`).isDirectory()) continue;
 	const jobHandler = (await import(`./src/${file.replace('.ts', '.js')}`)).default as (arg0: Record<string, unknown>) => Promise<void> | void;
-	new Worker(file.replace('.ts', '').replace('.js', ''), async (job) => await jobHandler(job.data), {
+
+	let jobName = file.replace('.ts', '').replace('.js', '');
+	if (process.env.NODE_ENV !== 'production') jobName = `${jobName}_dev`;
+
+	new Worker(jobName, async (job) => await jobHandler(job.data), {
 		connection: {
 			host: redisUrl[0],
 			port: Number(redisUrl[1])
 		}
 	});
 
-	console.log(`loaded ${file.replace('.ts', '').replace('.js', '')}`);
+	console.log(`loaded '${jobName}'`);
 }

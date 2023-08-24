@@ -1,8 +1,5 @@
 type Input = {
 	id: string;
-	name: string;
-	description: string;
-	format: 'mp4';
 };
 
 export default async (data: Input) => {
