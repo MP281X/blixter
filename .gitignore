@@ -11,6 +11,9 @@ build
 # env
 .env
 
+# ffmpeg
+cache
+
 # others
 .DS_Store
 vite.config.js.timestamp-*

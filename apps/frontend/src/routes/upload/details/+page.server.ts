@@ -19,7 +19,6 @@ export const actions: Actions = {
 		try {
 			await db.insert(videos).values({
 				id: data._id,
-				format: data._format,
 				name: data.name,
 				description: data.description
 			});
@@ -27,7 +26,7 @@ export const actions: Actions = {
 			return formatDbError(e);
 		}
 
-		await rawVideo({ id: data._id });
+		await rawVideo({ id: data._id, format: data._format });
 
 		throw redirect(303, '/');
 	}
