@@ -3,22 +3,9 @@
 	"type": "module",
 	"main": "index.g.ts",
 	"types": "index.g.ts",
-	"scripts": {
-		"dev": "nodemon",
-		"build": "tsx codegen.ts"
-	},
-	"nodemonConfig": {
-		"ext": ".ts",
-		"exec": "tsx codegen.ts",
-		"quiet": true,
-		"watch": [
-			"../../apps/jobs-handler/src/**",
-			"codegen.ts"
-		],
-		"ignore": [
-			"**/*.g.ts"
-		]
-	},
+	"codegen": [
+		"../../apps/jobs-handler/src/*.ts"
+	],
 	"dependencies": {
 		"bullmq": "^4.7.2"
 	}

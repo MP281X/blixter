@@ -1,14 +1,29 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
-import * as schema from './schema.js';
+// @ts-expect-error
+import pg from 'pg';
+import { Kysely, PostgresDialect } from 'kysely';
+import type { DB } from './index.g.d.ts';
+import { z } from 'zod';
 
-// export the schema and the zod validatiors
-export * from './schema.js';
-// export the drizzle functions
-export * from 'drizzle-orm';
+export const db = new Kysely<DB>({
+	dialect: new PostgresDialect({
+		pool: new pg.Pool({
+			connectionString: process.env.POSTGRES_URL
+		})
+	})
+});
 
-if (process.env.NODE_ENV !== 'production') await import('dotenv/config');
+export const newUserSchema = z
+	.object({
+		username: z.string().min(5).max(20).toLowerCase().trim(),
+		email: z.string().max(50).email().toLowerCase().trim(),
+		password: z.string().min(5).max(30),
+		verified: z.boolean().default(false)
+	})
+	.pick({ username: true, email: true, password: true });
 
-const client = postgres(process.env.POSTGRES_URL!);
-
-export const db = drizzle(client, { schema });
+export const findUserSchema = z
+	.object({
+		username: z.string().min(5).max(20).toLowerCase().trim(),
+		password: z.string().min(5).max(30)
+	})
+	.pick({ username: true, password: true });

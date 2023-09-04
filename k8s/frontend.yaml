@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend 
+  name: frontend
   namespace: blixter
   labels: { app: frontend }
 spec:

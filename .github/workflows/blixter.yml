@@ -1,41 +1,32 @@
 name: blixter
- 
-on: [ push ]
- 
+
+on: [push]
+
 jobs:
   blixter:
     name: Blixter
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Node.js
-        uses: actions/setup-node@v3
-        with: { node-version: 20 }
- 
-      - name: Pnpm
-        uses: pnpm/action-setup@v2
-        with: { version: 8, run_install: false }
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
 
       - name: Cache dependency
         uses: actions/cache@v3
         with:
-          path: /home/runner/setup-pnpm/node_modules/.bin/store/v3
-          key: pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
- 
+          path: ~/.bun/install/cache
+          key: bun-${{ hashFiles('**/bun.lockb') }}
+
       - name: Install dependencies
-        run: pnpm install
- 
+        run: bun install
+
       - name: Build
-        run: pnpm _build
-
-      - name: Lint
-        run: pnpm _lint
-
-      - name: Clean dependencies
-        run: pnpm i --force -prod
+        run: bun run build
 
       - name: Container registry login
         uses: docker/login-action@v2
@@ -44,18 +35,10 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Docker (frontend)
-        uses: docker/build-push-action@v4
-        with:
-          push: true
-          context: .
-          file: ./apps/frontend/Dockerfile
-          tags: ghcr.io/mp281x/blixter-frontend:latest
-      
       - name: Docker (jobs-handler)
         uses: docker/build-push-action@v4
         with:
           push: true
-          context: .
+          context: ./apps/jobs-handler
           file: ./apps/jobs-handler/Dockerfile
           tags: ghcr.io/mp281x/job-handler:latest

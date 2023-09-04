@@ -31,7 +31,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: redis
-  namespace: blixter 
+  namespace: blixter
   annotations:
     kubernetes.io/ingress.class: traefik
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true

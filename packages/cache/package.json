@@ -3,7 +3,9 @@
 	"type": "module",
 	"main": "index.ts",
 	"types": "index.ts",
-	"scripts": {},
+	"scripts": {
+		"lint": "tsc"
+	},
 	"dependencies": {
 		"redis": "^4.6.7"
 	}

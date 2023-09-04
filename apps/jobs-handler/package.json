@@ -1,23 +1,14 @@
 {
 	"name": "jobs-handler",
 	"type": "module",
-	"main": "dist/index.js",
+	"main": "index.ts",
+	"codegen": [
+		"./src/*.ts"
+	],
 	"scripts": {
-		"dev": "nodemon",
-		"build": "tsc",
-		"preview": "node dist/index.js"
-	},
-	"nodemonConfig": {
-		"ext": ".ts",
-		"exec": "tsx index.ts",
-		"quiet": true,
-		"watch": [
-			"src/**",
-			"index.ts"
-		],
-		"ignore": [
-			"**/*.g.ts"
-		]
+		"dev": "bun --watch index.ts",
+		"build": "bun build index.ts --outdir ./build --target node --minify",
+		"preview": "bun run build && bun ./build/index.js"
 	},
 	"dependencies": {
 		"bullmq": "^4.7.2",

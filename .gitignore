@@ -1,20 +1,11 @@
-# monorepo / node
-.turbo
-node_modules
-
 # generated
 dist
 build
 *.g.ts
-.svelte-kit
-
-# env
-.env
-
-# ffmpeg
-cache
+*.g.d.ts
+*.tsbuildinfo
 
 # others
-.DS_Store
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
+.env
+cache
+node_modules

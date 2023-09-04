@@ -1,8 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "rootDirs": ["."],
-    "outDir": "./dist",
-	},
-  "include": [ "./index.ts", "./src/" ]
+	"extends": "../../tsconfig.json",
+	"compilerOptions": { "rootDirs": ["."] },
+	"include": ["./index.ts", "./codegen.ts", "./src/*"]
 }

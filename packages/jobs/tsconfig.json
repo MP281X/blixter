@@ -1,6 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "rootDirs": ["."],
-	},
+	"extends": "../../tsconfig.json",
+	"compilerOptions": { "rootDirs": ["."] },
+	"include": ["./codegen.ts", "../../apps/jobs-handler/src/*"]
 }

@@ -9,7 +9,7 @@ for (const file of fileList) {
 
 	const jobName = file.split('.')[0];
 
-	generatedData.unshift(`import type ${jobName}_type from '${basePath}/${jobName}.js'`);
+	generatedData.unshift(`import type ${jobName}_type from '${basePath}/${jobName}.ts'`);
 
 	generatedData.push(`
     const ${jobName}_queue = new Queue('${process.env.NODE_ENV !== 'production' ? jobName + '_dev' : jobName}', {
@@ -26,7 +26,6 @@ for (const file of fileList) {
 }
 
 generatedData.unshift("const redisUrl = (process.env.REDIS_URL ?? '').replace('redis://', '').split(':')");
-generatedData.unshift("if (process.env.NODE_ENV !== 'production') await import('dotenv/config');");
 generatedData.unshift("import { Queue } from 'bullmq';");
 
 fs.writeFileSync('./index.g.ts', generatedData.join('\n'));

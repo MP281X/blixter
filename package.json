@@ -1,40 +1,22 @@
 {
 	"name": "blixter",
-	"version": "1.0.0",
-	"engines": {
-		"node": ">=20.0.0"
-	},
+	"private": true,
+	"workspaces": [
+		"packages/*",
+		"apps/*"
+	],
 	"scripts": {
-		"dev": "pnpm _clean && turbo run dev",
-		"preview": "pnpm _clean && pnpm _build && pnpm _lint && clear && turbo run preview",
-		"db": "(cd ./packages/db && pnpm db)",
-		"_": "hidden scripts",
-		"_build": "turbo run build",
-		"_lint": "prettier --write \"**/*.{ts,svelte}\" && eslint \"**/*.{ts,svelte}\" && turbo run lint",
-		"_clean": "bash script/clean.sh"
+		"dev": "bun task_runner.ts dev",
+		"db": "bun task_runner.ts db",
+		"build": "bun task_runner.ts build",
+		"preview": "bun task_runner.ts preview"
 	},
 	"devDependencies": {
-		"@egoist/tailwindcss-icons": "^1.1.0",
-		"@types/node": "^20.5.6",
-		"@typescript-eslint/eslint-plugin": "^6.3.0",
-		"@typescript-eslint/parser": "^6.3.0",
-		"autoprefixer": "^10.4.14",
-		"eslint": "^8.47.0",
-		"eslint-config-prettier": "^9.0.0",
-		"eslint-plugin-svelte": "^2.32.4",
-		"nodemon": "^3.0.1",
-		"postcss": "^8.4.27",
+		"bun-types": "^0.8.1",
+		"chokidar": "^3.5.3",
 		"prettier": "^3.0.1",
-		"prettier-plugin-svelte": "^3.0.3",
+		"@egoist/tailwindcss-icons": "^1.1.0",
 		"prettier-plugin-tailwindcss": "^0.5.3",
-		"tailwindcss": "^3.3.3",
-		"tsx": "^3.12.7",
-		"turbo": "^1.10.12",
 		"typescript": "^5.1.6"
-	},
-	"dependencies": {
-		"dotenv": "^16.3.1",
-		"undici": "^5.23.0",
-		"zod": "^3.22.1"
 	}
 }

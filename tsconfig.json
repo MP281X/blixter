@@ -1,19 +1,39 @@
 {
-  "compilerOptions": {
-    "lib": ["ESNext"],
-    "module": "ESNext",
-    "target": "ESNext",
-    "moduleResolution": "nodenext",
-    "ignoreDeprecations": "5.0",
-    "strict": true,
-    "allowJs": true,
-		"checkJs": true,
-    "skipLibCheck": true,
+	"compilerOptions": {
+		// ts version and module resolution
+		"lib": ["ESNext"],
+		"target": "ESNext",
+		"module": "ESNext",
+		"types": ["bun-types"],
+		"moduleDetection": "force",
+		"moduleResolution": "bundler",
+
+		// others
+		"noEmit": true,
+		"jsx": "preserve",
+		"composite": true,
+		"skipLibCheck": true,
 		"esModuleInterop": true,
-    "isolatedModules": true,
-    "resolveJsonModule": true,
-		"preserveValueImports": true,
-    "importsNotUsedAsValues": "error",
-		"forceConsistentCasingInFileNames": true,
+		"isolatedModules": true,
+		"resolveJsonModule": true,
+		"downlevelIteration": true,
+		"verbatimModuleSyntax": false,
+		"allowImportingTsExtensions": true,
+		"allowSyntheticDefaultImports": true,
+
+		// strict mode
+		"strict": true,
+		"allowJs": false,
+		"noUnusedLocals": true,
+		"noImplicitReturns": true,
+		"allowUnusedLabels": false,
+		"noImplicitOverride": true,
+		"noUnusedParameters": true,
+		"allowUnreachableCode": false,
+		"noUncheckedIndexedAccess": true,
+		"exactOptionalPropertyTypes": true,
+		"noFallthroughCasesInSwitch": true,
+		"forceConsistentCasingInFileNames": true
 	},
+	"exclude": ["**/node_modules"]
 }

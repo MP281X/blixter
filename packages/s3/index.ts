@@ -2,8 +2,6 @@ import { S3, S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/clien
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import crypto from 'crypto';
 
-if (process.env.NODE_ENV !== 'production') await import('dotenv/config');
-
 const s3Client = new S3Client({
 	endpoint: 'https://eu2.contabostorage.com',
 	forcePathStyle: true,
@@ -63,8 +61,8 @@ export const listFiles = async (type: FileType) => {
 	});
 
 	return files.Contents?.map((obj) => ({
-		id: obj.Key,
-		uploadedAt: obj.LastModified
+		id: obj.Key?.replace(`${type}/`, '')!,
+		uploadedAt: obj.LastModified!
 	}));
 };
 
