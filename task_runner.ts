@@ -1,6 +1,5 @@
 import fs from 'fs';
 import process from 'process';
-import chokidar from 'chokidar';
 
 // custom logger
 const log = async (title: string, input: string | Uint8Array | ReadableStream<Uint8Array>, color: number) => {
@@ -27,20 +26,20 @@ const log = async (title: string, input: string | Uint8Array | ReadableStream<Ui
 // exec a command
 type ExecCmdType = {
 	title: string;
-	cmd: string;
+	cmd: string | string[];
 	color: number;
 	cwd?: string;
 	sync?: boolean;
 };
 const execCmd = async ({ title, color, cmd, sync, cwd }: ExecCmdType) => {
-	const command = cmd.split(' ');
+	if (typeof cmd === 'string') cmd = cmd.split(' ');
 
 	if (sync) {
-		const output = Bun.spawnSync(command, { cwd: cwd ?? '.' });
+		const output = Bun.spawnSync(cmd, { cwd: cwd ?? '.' });
 		return await Promise.all([log(title, output.stdout, color), log(title, output.stderr, 91)]);
 	}
 
-	const output = Bun.spawn(command, {
+	const output = Bun.spawn(cmd, {
 		cwd: cwd ?? '.',
 		stderr: 'pipe',
 		onExit: () => log('exit', title, 91)
@@ -99,36 +98,25 @@ const runScript = async (project: ProjectsType, script: 'codegen' | (string & {}
 	const { name, cwd, scripts, codegen } = project;
 
 	if (script === 'codegen' && codegen) {
-		await execCmd({
-			title: `codegen:${name}`,
-			cmd: 'bun codegen.ts',
-			sync: true,
-			color: 90,
-			cwd
-		});
+		if (process.argv[2]! !== 'dev')
+			await execCmd({
+				title: `codegen:${name}`,
+				cmd: 'bun codegen.ts',
+				sync: true,
+				color: 90,
+				cwd
+			});
+
+		const ignore = ['*.g.d.ts', '*.g.ts', 'node_modules'].map((x) => ['--ignore', `**/${x}`]).flat(1);
+		const watch = codegen.map((x) => ['--watch', x]).flat(1);
 
 		if (process.argv[2]! === 'dev')
-			chokidar
-				.watch(codegen, {
-					persistent: true,
-					ignorePermissionErrors: true,
-					cwd: cwd,
-					ignored: /node_modules/,
-					ignoreInitial: true,
-					awaitWriteFinish: {
-						stabilityThreshold: 500,
-						pollInterval: 100
-					}
-				})
-				.on('all', (_) => {
-					execCmd({
-						title: `codegen:${name}`,
-						cmd: 'bun codegen.ts',
-						sync: true,
-						color: 90,
-						cwd
-					});
-				});
+			execCmd({
+				title: `codegen:${name}`,
+				cmd: ['bun', 'x', 'nodemon', '-q', '--ext', '*', ...watch, ...ignore, '--exec', 'bun ./codegen.ts'],
+				color: 90,
+				cwd
+			});
 	}
 
 	if (scripts.includes(script))
