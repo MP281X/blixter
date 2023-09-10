@@ -1,9 +1,10 @@
 # generated
 dist
 build
+.svelte-kit
+.cache
 *.g.ts
-*.g.d.ts
-*.tsbuildinfo
+vite.config.ts.*
 
 # others
 .env

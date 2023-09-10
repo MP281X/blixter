@@ -34,6 +34,10 @@ table "videos" {
     default = sql("gen_random_uuid()")
   }
 
+  column "user_id" {
+    type = uuid
+  }
+
   column "name" {
     type = varchar(20)
   }

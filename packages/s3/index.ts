@@ -24,10 +24,10 @@ const s3 = new S3({
 
 const Bucket = 'blixter';
 
-type FileType = 'images' | 'raw_images' | 'videos' | 'raw_videos';
+type FileType = 'images' | 'raw_images' | 'videos' | 'raw_videos' | 'raw_audios';
 
-export const uploadUrl = async (type: FileType) => {
-	const id = crypto.randomUUID().toString();
+export const uploadUrl = async (type: FileType, id?: string) => {
+	if (id === undefined) id = crypto.randomUUID().toString();
 
 	const fileInfo = new PutObjectCommand({
 		Bucket,
@@ -54,19 +54,31 @@ export const downloadUrl = async (type: FileType, id: string) => {
 	return url;
 };
 
-export const listFiles = async (type: FileType) => {
+export const listFiles = async (type: FileType, id: string = '') => {
 	const files = await s3.listObjectsV2({
 		Bucket,
-		Prefix: `${type}/`
+		Prefix: `${type}/${id}`
 	});
 
 	return files.Contents?.map((obj) => ({
-		id: obj.Key?.replace(`${type}/`, '')!,
+		id: obj.Key?.replace(`${type}/${id}/`, '')!,
 		uploadedAt: obj.LastModified!
 	}));
 };
 
-export const deleteFile = async (type: FileType, id: string) => {
+export const deleteFile = async (type: FileType, id: string, folder: boolean = false) => {
+	if (folder) {
+		const res = await listFiles(type, id);
+		if (!res) return;
+
+		for (const file of res) {
+			console.log(file);
+			await s3.deleteObject({
+				Bucket,
+				Key: `${type}/${id}/${file.id}`
+			});
+		}
+	}
 	await s3.deleteObject({
 		Bucket,
 		Key: `${type}/${id}`

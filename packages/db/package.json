@@ -3,9 +3,6 @@
 	"type": "module",
 	"main": "index.ts",
 	"types": "index.ts",
-	"scripts": {
-		"db": "bash ./migrate.sh"
-	},
 	"dependencies": {
 		"kysely": "^0.26.3",
 		"pg": "^8.11.3",

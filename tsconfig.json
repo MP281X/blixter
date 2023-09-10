@@ -11,7 +11,6 @@
 		// others
 		"noEmit": true,
 		"jsx": "preserve",
-		"composite": true,
 		"skipLibCheck": true,
 		"esModuleInterop": true,
 		"isolatedModules": true,

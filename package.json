@@ -6,16 +6,18 @@
 		"apps/*"
 	],
 	"scripts": {
-		"dev": "bun task_runner.ts dev",
-		"db": "bun task_runner.ts db",
-		"build": "bun task_runner.ts build",
-		"preview": "bun task_runner.ts preview"
+		"db": "bun task-runner.ts db",
+		"dev": "bun task-runner.ts dev",
+		"test": "bun task-runner.ts test",
+		"build": "bun task-runner.ts build",
+		"preview": "bun task-runner.ts preview",
+		"secrets": "bun task-runner.ts secrets"
 	},
 	"devDependencies": {
-		"@egoist/tailwindcss-icons": "^1.1.0",
 		"bun-types": "^0.8.1",
 		"nodemon": "^3.0.1",
-		"prettier": "^3.0.1",
+		"prettier": "^3.0.3",
+		"prettier-plugin-svelte": "^3.0.3",
 		"prettier-plugin-tailwindcss": "^0.5.3",
 		"typescript": "^5.1.6"
 	}

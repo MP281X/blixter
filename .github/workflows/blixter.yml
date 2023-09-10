@@ -35,10 +35,18 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Docker (jobs-handler)
+      - name: docker (jobs-handler)
         uses: docker/build-push-action@v4
         with:
           push: true
           context: ./apps/jobs-handler
           file: ./apps/jobs-handler/Dockerfile
           tags: ghcr.io/mp281x/job-handler:latest
+
+      - name: docker (frontend)
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          context: .
+          file: ./apps/frontend/Dockerfile
+          tags: ghcr.io/mp281x/blixter-frontend:latest

@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*? style reset */
+@layer base {
+	/* font configuration */
+	@font-face {
+		font-family: 'Carbon Regular';
+		src: url(/fonts/font_regular.woff2) format('woff2');
+		font-style: regular;
+	}
+
+	@font-face {
+		font-family: 'Carbon Bold';
+		src: url(/fonts/font_bold.woff2) format('woff2');
+		font-style: regular;
+	}
+
+	/* icons configuration */
+	.icons {
+		font-family: 'Material Symbols Rounded';
+		font-weight: normal;
+		font-style: normal;
+		line-height: 1;
+		letter-spacing: normal;
+		text-transform: none;
+		white-space: nowrap;
+		word-wrap: normal;
+		direction: ltr;
+		-webkit-font-feature-settings: 'liga';
+		-webkit-font-smoothing: antialiased;
+	}
+
+	@font-face {
+		font-family: 'Material Symbols Rounded';
+		font-style: normal;
+		font-weight: 700;
+		src: url(/fonts/icons.woff2) format('woff2');
+	}
+
+	/* others */
+	* {
+		box-sizing: border-box;
+	}
+
+	*::selection {
+		background: #fd7356;
+	}
+
+	::-webkit-scrollbar {
+		@apply hidden;
+	}
+}
+
+@layer components {
+	.btn-animation {
+		@apply border-white bg-black;
+		transition-property: box-shadow background;
+		transition-duration: 0.4s;
+		transition-timing-function: ease;
+	}
+
+	.btn-animation:hover {
+		@apply border-black bg-white text-black;
+		box-shadow: 5px 5px #10101a;
+	}
+}

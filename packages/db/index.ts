@@ -2,8 +2,10 @@
 import pg from 'pg';
 import { Kysely, PostgresDialect } from 'kysely';
 import type { DB } from './index.g.d.ts';
+import { hashPassword, validator } from './src/helpers';
 import { z } from 'zod';
 
+// db instance
 export const db = new Kysely<DB>({
 	dialect: new PostgresDialect({
 		pool: new pg.Pool({
@@ -12,18 +14,22 @@ export const db = new Kysely<DB>({
 	})
 });
 
-export const newUserSchema = z
-	.object({
-		username: z.string().min(5).max(20).toLowerCase().trim(),
-		email: z.string().max(50).email().toLowerCase().trim(),
-		password: z.string().min(5).max(30),
-		verified: z.boolean().default(false)
-	})
-	.pick({ username: true, email: true, password: true });
+// user
+export const newUser = validator('users', 'required', {
+	username: z.string().toLowerCase().trim().min(3).max(20),
+	email: z.string().toLowerCase().trim().max(50).email(),
+	password: z.string().trim().min(5).max(30).transform(hashPassword)
+});
 
-export const findUserSchema = z
-	.object({
-		username: z.string().min(5).max(20).toLowerCase().trim(),
-		password: z.string().min(5).max(30)
-	})
-	.pick({ username: true, password: true });
+export const findUser = validator('users', 'optional', {
+	username: z.string().toLowerCase().trim().min(3).max(20),
+	password: z.string().trim().min(5).max(30).transform(hashPassword)
+});
+
+// db
+export const newVideo = validator('videos', 'optional', {
+	name: z.string().min(5).max(20),
+	description: z.string().max(500),
+	_id: z.string().uuid().nonempty({ message: 'video not found' }),
+	_format: z.enum(['mp4'], { invalid_type_error: 'video not found' })
+});

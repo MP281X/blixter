@@ -2,14 +2,13 @@ import fs from 'fs';
 
 const generatedData: string[] = [];
 
-const basePath = './src/';
+const basePath = './src';
 const fileList = fs.readdirSync(`${basePath}/`);
 for (const file of fileList) {
 	if (fs.statSync(`${basePath}/${file}`).isDirectory()) continue;
-	if (file === 'index.g.ts') continue;
+	if (file.endsWith('.g.ts') || file.endsWith('.test.ts')) continue;
 
-	const jobName = file.split('.')[0];
-	generatedData.push(`export * as ${jobName} from "./${jobName}.ts"`);
+	generatedData.push(`export * as ${file.split('.')[0]} from "./${file}"`);
 }
 
 console.log('generated import/export file');

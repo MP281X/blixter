@@ -16,9 +16,9 @@ spec:
           image: postgres:latest
           ports: [containerPort: 5432]
           env:
-            - { name: POSTGRES_USER, value: postgres }
-            - { name: POSTGRES_DB, value: postgres }
-            - { name: POSTGRES_PASSWORD, value: postgres }
+            - { name: POSTGRES_USER, valueFrom: { secretKeyRef: { name: 'postgres', key: 'POSTGRES_USER' } } }
+            - { name: POSTGRES_DB, valueFrom: { secretKeyRef: { name: 'postgres', key: 'POSTGRES_DB' } } }
+            - { name: POSTGRES_PASSWORD, valueFrom: { secretKeyRef: { name: 'postgres', key: 'POSTGRES_PASSWORD' } } }
       #     volumeMounts: [{ name: data, mountPath: /var/lib/postgresql }]
       # volumes:
       #   - name: data

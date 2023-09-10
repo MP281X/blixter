@@ -2,6 +2,7 @@
 	"name": "jobs-handler",
 	"type": "module",
 	"main": "index.ts",
+	"types": "index.ts",
 	"codegen": [
 		"./src/*.ts"
 	],

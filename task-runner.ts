@@ -2,19 +2,22 @@ import fs from 'fs';
 import process from 'process';
 
 // custom logger
-const log = async (title: string, input: string | Uint8Array | ReadableStream<Uint8Array>, color: number) => {
+const log = async (title: string, input: string | Uint8Array | ReadableStream<Uint8Array>, color: number = 91) => {
 	title = title.replaceAll('\n', ' ');
-	if (title.length < 16) title += ' '.repeat(16 - title.length);
+	if (title.length < 20) title += ' '.repeat(20 - title.length);
 
 	const read = (msg: string | Uint8Array) => {
 		if (typeof msg !== 'string') msg = new TextDecoder().decode(msg);
 
 		msg.split('\n').forEach((txt) => {
-			txt = txt.trim();
-			if (txt.trim() === '') return;
-			if (txt.includes('] ".env"')) return;
+			txt = txt.replaceAll('➜', '').trim();
+			if (txt === '') return;
+			if (txt.includes('VITE') || txt.includes('use --host to expose')) return;
 
-			console.log(`\x1b[${color}m${title} -> \x1b[0m${txt}`);
+			if (color === 91 && Bun.env.NODE_ENV === 'production') {
+				console.error(`\x1b[${color}m${title} ➜ \x1b[0m${txt}`);
+				process.exit(1);
+			} else console.log(`\x1b[${color}m${title} ➜ \x1b[0m${txt}`);
 		});
 	};
 
@@ -27,25 +30,41 @@ const log = async (title: string, input: string | Uint8Array | ReadableStream<Ui
 type ExecCmdType = {
 	title: string;
 	cmd: string | string[];
-	color: number;
+	color?: number;
 	cwd?: string;
 	sync?: boolean;
 };
+
+let colorCounter = 92;
 const execCmd = async ({ title, color, cmd, sync, cwd }: ExecCmdType) => {
 	if (typeof cmd === 'string') cmd = cmd.split(' ');
+	if (!color) {
+		color = colorCounter;
+		colorCounter += 1;
+		if (colorCounter >= 96) colorCounter = 92;
+	}
 
 	if (sync) {
-		const output = Bun.spawnSync(cmd, { cwd: cwd ?? '.' });
-		return await Promise.all([log(title, output.stdout, color), log(title, output.stderr, 91)]);
+		const output = Bun.spawnSync(cmd, {
+			cwd: cwd ?? '.',
+			env: {
+				...Bun.env,
+				NODE_ENV: process.argv[2]! === 'build' ? 'production' : 'development'
+			}
+		});
+		return await Promise.all([log(title, output.stdout, color), log(title, output.stderr)]);
 	}
 
 	const output = Bun.spawn(cmd, {
 		cwd: cwd ?? '.',
 		stderr: 'pipe',
-		onExit: () => log('exit', title, 91)
+		env: {
+			...Bun.env,
+			NODE_ENV: process.argv[2]! === 'build' ? 'production' : 'development'
+		}
 	});
 
-	return Promise.all([log(title, output.stdout, color), log(title, output.stderr, 91)]);
+	return Promise.all([log(title, output.stdout, color), log(title, output.stderr)]);
 };
 
 // find every project (apps and packages) in the current folder and create and array with those info
@@ -63,10 +82,10 @@ const findProjects = async (dir: string = '.') => {
 
 	for (const file of files) {
 		try {
-			if (['build'].includes(file) || file.includes('.g.ts')) {
+			if (['build', 'dist', '.cache'].includes(file) || file.includes('.g.ts')) {
 				fs.rmSync(`${dir}/${file}`, { recursive: true, force: true });
 
-				log('delete', file, 91);
+				log(`delete:${dir.replace('./packages/', '').replace('./apps/', '').replace('/src', '')}`, file);
 				continue;
 			}
 		} catch (_) {}
@@ -98,22 +117,18 @@ const runScript = async (project: ProjectsType, script: 'codegen' | (string & {}
 	const { name, cwd, scripts, codegen } = project;
 
 	if (script === 'codegen' && codegen) {
-		if (process.argv[2]! !== 'dev')
-			await execCmd({
-				title: `codegen:${name}`,
-				cmd: 'bun codegen.ts',
-				sync: true,
-				color: 90,
-				cwd
-			});
-
-		const ignore = ['*.g.d.ts', '*.g.ts', 'node_modules'].map((x) => ['--ignore', `**/${x}`]).flat(1);
-		const watch = codegen.map((x) => ['--watch', x]).flat(1);
+		await execCmd({
+			title: `codegen:${name}`,
+			cmd: 'bun codegen.ts',
+			sync: true,
+			color: 90,
+			cwd
+		});
 
 		if (process.argv[2]! === 'dev')
 			execCmd({
 				title: `codegen:${name}`,
-				cmd: ['bun', 'x', 'nodemon', '-q', '--ext', '*', ...watch, ...ignore, '--exec', 'bun ./codegen.ts'],
+				cmd: ['bun', 'x', 'nodemon', '--config', '../../nodemon.json', ...codegen.map((x) => ['--watch', x]).flat(1)],
 				color: 90,
 				cwd
 			});
@@ -123,7 +138,6 @@ const runScript = async (project: ProjectsType, script: 'codegen' | (string & {}
 		return execCmd({
 			title: `${name}:${script}`,
 			cmd: `bun run --silent ${script}`,
-			color: 94,
 			cwd
 		});
 
@@ -132,10 +146,10 @@ const runScript = async (project: ProjectsType, script: 'codegen' | (string & {}
 
 // run the scripts
 const projects = await findProjects();
+const prettier_args = '--plugin prettier-plugin-svelte . --log-level error --ignore-path .gitignore';
 await execCmd({
 	title: 'lint',
-	cmd: 'bun x prettier --log-level error --ignore-path .gitignore --write .',
-	color: 93,
+	cmd: `bun x prettier ${prettier_args}  --${['build', 'preview'].includes(process.argv[2]!) ? 'check' : 'write'} .`,
 	sync: true
 });
 
@@ -143,14 +157,22 @@ await execCmd({
 for (const project of projects) await runScript(project, 'codegen');
 
 // check types
-for (const project of projects)
-	await execCmd({
-		title: 'lint',
-		cmd: 'bun x tsc',
-		color: 93,
-		cwd: project.cwd,
-		sync: true
-	});
+if (['build', 'preview'].includes(process.argv[2]!)) {
+	for (const project of projects) {
+		runScript(project, 'lint');
+		await execCmd({
+			title: `tsc:${project.name}`,
+			cmd: 'bun x tsc --noEmit',
+			cwd: project.cwd,
+			sync: true
+		});
+	}
+}
 
 // run the scripts
 for (const project of projects) runScript(project, process.argv[2]!);
+
+if (process.argv[2] === 'test') {
+	console.clear();
+	Bun.spawn(['bun', '--silent', 'test', process.argv[3] ? process.argv[3] : ''], { stdout: 'inherit', stderr: 'inherit' });
+}

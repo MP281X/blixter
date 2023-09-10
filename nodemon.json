@@ -1,0 +1,8 @@
+{
+	"exec": "echo ''",
+	"ext": "*",
+	"quiet": true,
+	"verbose": false,
+	"ignore": ["**/node_modules", "**/.g.d.ts", "**/.g.ts", "**/*.test.ts", "**/.cache/"],
+	"events": { "restart": "bun ./codegen.ts" }
+}

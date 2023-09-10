@@ -6,10 +6,11 @@ const basePath = '../../apps/jobs-handler/src';
 const fileList = fs.readdirSync(`${basePath}/`);
 for (const file of fileList) {
 	if (fs.statSync(`${basePath}/${file}`).isDirectory()) continue;
+	if (file.endsWith('.g.ts') || file.endsWith('.test.ts')) continue;
 
 	const jobName = file.split('.')[0];
 
-	generatedData.unshift(`import type ${jobName}_type from '${basePath}/${jobName}.ts'`);
+	generatedData.unshift(`import type ${jobName}_type from '${basePath}/${file}'`);
 
 	generatedData.push(`
     const ${jobName}_queue = new Queue('${process.env.NODE_ENV !== 'production' ? jobName + '_dev' : jobName}', {
