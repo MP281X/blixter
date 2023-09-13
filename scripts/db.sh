@@ -1,5 +1,24 @@
 #!/bin/bash
 
+DEPLOYMENTS=("redis" "postgres")
+for deployment in "${DEPLOYMENTS[@]}"; do
+    # Delete the deployment
+    kubectl delete deployment "$deployment" -n blixter
+    
+    # Wait for the pod restart
+    while true; do
+        if kubectl get pods -n blixter | grep "$deployment" | grep -q "1/1"; then
+            echo "$deployment: running"
+            break
+        else
+            echo "$deployment: restarting"
+            sleep 5
+        fi
+    done
+done
+
+sleep 10
+
 # run db migration
 atlas schema fmt ../packages/db/schema.hcl;
 atlas schema clean --auto-approve -u $POSTGRES_URL;

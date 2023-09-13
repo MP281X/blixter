@@ -46,6 +46,7 @@ const execCmd = async ({ title, color, cmd, sync, cwd }: ExecCmdType) => {
 
 	if (sync) {
 		const output = Bun.spawnSync(cmd, {
+			onExit: () => console.log(`\x1b[91m${title} ➜ \x1b[0mEXIT`),
 			cwd: cwd ?? '.',
 			env: {
 				...Bun.env,
@@ -56,6 +57,7 @@ const execCmd = async ({ title, color, cmd, sync, cwd }: ExecCmdType) => {
 	}
 
 	const output = Bun.spawn(cmd, {
+		onExit: () => console.log(`\x1b[91m${title} ➜ \x1b[0mEXIT`),
 		cwd: cwd ?? '.',
 		stderr: 'pipe',
 		env: {
@@ -149,7 +151,7 @@ const projects = await findProjects();
 const prettier_args = '--plugin prettier-plugin-svelte . --log-level error --ignore-path .gitignore';
 await execCmd({
 	title: 'lint',
-	cmd: `bun x prettier ${prettier_args}  --${['build', 'preview'].includes(process.argv[2]!) ? 'check' : 'write'} .`,
+	cmd: `bun x prettier ${prettier_args}  --${['build', 'preview', 'test'].includes(process.argv[2]!) ? 'check' : 'write'} .`,
 	sync: true
 });
 
@@ -174,5 +176,5 @@ for (const project of projects) runScript(project, process.argv[2]!);
 
 if (process.argv[2] === 'test') {
 	console.clear();
-	Bun.spawn(['bun', '--silent', 'test', process.argv[3] ? process.argv[3] : ''], { stdout: 'inherit', stderr: 'inherit' });
+	Bun.spawn(['bun', '--silent', 'test', process.argv[4] ?? ''], { stdout: 'inherit', stderr: 'inherit', cwd: process.argv[3] ?? process.cwd() });
 }

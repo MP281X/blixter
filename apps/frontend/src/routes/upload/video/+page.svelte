@@ -3,23 +3,29 @@
 
 	let files: FileList;
 	let fileInput: { value: any };
-	let uploadController: AbortController | undefined;
+	let uploadController: XMLHttpRequest | undefined;
 	let uploadState: 'uploading' | 'uploaded' | undefined;
 	let videoInfo: { id: string; format: string };
+	let uploadedPercent = 0;
 
 	const uploadFile = async () => {
 		try {
 			if (files && files.length !== 1) return;
-			uploadController = new AbortController();
-
 			uploadState = 'uploading';
-			const res = await fetch(data.upload.url, {
-				method: 'put',
-				body: await files[0].arrayBuffer(),
-				signal: uploadController.signal
+			const file = await files[0].arrayBuffer();
+
+			const upload = await new Promise<number>((resolve, reject) => {
+				uploadController = new XMLHttpRequest();
+				uploadController.open('PUT', data.upload.url);
+
+				uploadController.upload.addEventListener('progress', (e) => (uploadedPercent = Math.floor((e.loaded / e.total) * 100)));
+
+				uploadController.addEventListener('load', (e) => resolve(uploadController!.status));
+				uploadController.addEventListener('error', (e) => reject(e));
+				uploadController.send(file);
 			});
 
-			if (res.status === 200) {
+			if (upload === 200) {
 				uploadController = undefined;
 				videoInfo = { id: data.upload.id, format: files[0].type.split('/')[1] };
 				uploadState = 'uploaded';
@@ -30,8 +36,8 @@
 	};
 
 	const cancelUpload = () => {
-		console.log('ok');
 		uploadState = undefined;
+		uploadedPercent = 0;
 		fileInput.value = '';
 
 		if (uploadController) uploadController.abort();
@@ -45,13 +51,12 @@
 		<input type="file" id="file" bind:this={fileInput} bind:files hidden accept="video/mp4" />
 
 		{#if files && files.length === 1}
-			<video
-				src={URL.createObjectURL(files[0])}
-				autoplay
-				muted
-				loop
-				class="hover:border-orange border-4 border-black transition-colors duration-200"
-				on:click={cancelUpload}></video>
+			<button
+				class="relative h-full w-full aspect-video flex hover:border-orange border-4 border-black transition-colors duration-200"
+				on:click={cancelUpload}>
+				<video src={URL.createObjectURL(files[0])} width="100%" autoplay muted loop class="aspect-video object-cover" />
+				<h3 class="absolute bg-black h-full w-full bg-opacity-70 flex justify-center items-center text-5xl">{uploadedPercent}%</h3>
+			</button>
 		{/if}
 
 		{#if uploadState === undefined}

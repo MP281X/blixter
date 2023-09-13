@@ -1,6 +1,8 @@
 import { S3, S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import fs from 'fs';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import crypto from 'crypto';
+import { watch } from 'fs/promises';
 
 const s3Client = new S3Client({
 	endpoint: 'https://eu2.contabostorage.com',
@@ -23,8 +25,7 @@ const s3 = new S3({
 });
 
 const Bucket = 'blixter';
-
-type FileType = 'images' | 'raw_images' | 'videos' | 'raw_videos' | 'raw_audios';
+export type FileType = 'images' | 'raw_images' | 'videos' | 'raw_videos' | 'raw_audios';
 
 export const uploadUrl = async (type: FileType, id?: string) => {
 	if (id === undefined) id = crypto.randomUUID().toString();
@@ -41,6 +42,45 @@ export const uploadUrl = async (type: FileType, id?: string) => {
 	return { url, id };
 };
 
+export const upload = async (type: FileType, name: string, path?: string, abortController?: AbortController) => {
+	const dir = `${process.cwd()}/.cache/${path ?? name}`;
+	if (!fs.statSync(dir).isDirectory()) {
+		const { url } = await uploadUrl(type, name);
+		const res = await fetch(url, { method: 'PUT', body: Bun.file(dir), timeout: false });
+
+		if (!res.ok) throw new Error('unable to upload the file');
+		fs.rmSync(dir);
+
+		return;
+	}
+
+	if (abortController) {
+		const watcher = watch(dir, { recursive: true, persistent: true, signal: abortController.signal });
+
+		try {
+			for await (let { filename } of watcher) {
+				filename = filename.replace('.tmp', '');
+				if (!fs.existsSync(`${dir}/${filename}`)) continue;
+
+				const { url } = await uploadUrl(type, `${name}/${filename}`);
+				const res = await fetch(url, { method: 'PUT', body: Bun.file(`${dir}/${filename}`), timeout: false });
+				if (res.ok) fs.rmSync(`${dir}/${filename}`);
+			}
+		} catch (e) {}
+	}
+
+	// it cannot be done with promise all' it throw a too many request error
+	for (const file of fs.readdirSync(dir)) {
+		if (fs.statSync(`${dir}/${file}`).isDirectory()) continue;
+
+		const { url } = await uploadUrl(type, `${name}/${file}`);
+		const res = await fetch(url, { method: 'PUT', body: Bun.file(`${dir}/${file}`), timeout: false });
+		if (!res.ok) throw new Error('unable to upload the files');
+
+		fs.rmSync(`${dir}/${file}`);
+	}
+};
+
 export const downloadUrl = async (type: FileType, id: string) => {
 	const fileInfo = new GetObjectCommand({
 		Bucket,
@@ -52,6 +92,14 @@ export const downloadUrl = async (type: FileType, id: string) => {
 	});
 
 	return url;
+};
+
+export const download = async (type: FileType, id: string, path: string) => {
+	const url = await downloadUrl(type, id);
+	const res = await fetch(url, { timeout: false });
+	if (!res.ok) throw new Error(`unable to download ${type}:${id}`);
+
+	await Bun.write(`${process.cwd()}/.cache/${path}`, res);
 };
 
 export const listFiles = async (type: FileType, id: string = '') => {
@@ -72,7 +120,6 @@ export const deleteFile = async (type: FileType, id: string, folder: boolean = f
 		if (!res) return;
 
 		for (const file of res) {
-			console.log(file);
 			await s3.deleteObject({
 				Bucket,
 				Key: `${type}/${id}/${file.id}`

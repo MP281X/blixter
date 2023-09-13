@@ -13,7 +13,9 @@
 	},
 	"dependencies": {
 		"bullmq": "^4.7.2",
+		"s3": "workspace:*",
 		"db": "workspace:*",
-		"s3": "workspace:*"
+		"jobs": "workspace:*",
+		"ffmpeg": "workspace:*"
 	}
 }
