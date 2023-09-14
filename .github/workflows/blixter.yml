@@ -42,6 +42,8 @@ jobs:
           context: ./apps/jobs-handler
           file: ./apps/jobs-handler/Dockerfile
           tags: ghcr.io/mp281x/job-handler:latest
+          cache-from: type=registry,ref=ghcr.io/mp281x/job-handler:latest
+          cache-to: type=inline
 
       - name: docker (frontend)
         uses: docker/build-push-action@v4
@@ -50,3 +52,5 @@ jobs:
           context: .
           file: ./apps/frontend/Dockerfile
           tags: ghcr.io/mp281x/blixter-frontend:latest
+          cache-from: type=registry,ref=ghcr.io/mp281x/blixter-frontend:latest
+          cache-to: type=inline

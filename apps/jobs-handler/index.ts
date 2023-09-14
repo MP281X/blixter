@@ -1,37 +1,31 @@
 import * as jobs from './src/index.g.ts';
-import { Queue, Worker } from 'bullmq';
+import { createClient } from 'redis';
 
-const [host, port] = Bun.env.REDIS_URL!.replace('redis://', '').split(':');
+const redis = createClient({ url: Bun.env.REDIS_URL! });
+await redis.connect();
+process.on('exit', async () => await redis.disconnect());
 
-for (let [jobName, jobHandler] of Object.entries(jobs)) {
-	if (Bun.env.NODE_ENV !== 'production') {
-		jobName = `${jobName}_dev`;
+Object.entries(jobs).forEach(async ([jobName, jobHandler]) => {
+	// duplicate the redis client to avoid that one job block the other
+	const redis_queue = redis.duplicate();
+	await redis_queue.connect();
 
+	if (Bun.env.NODE_ENV !== 'production') jobName = `${jobName}_dev`;
+	console.log(`loaded '${jobName}'`);
+
+	while (true) {
+		const raw_data = await redis_queue.BRPOPLPUSH(jobName, `${jobName}_temp`, 0);
+		if (!raw_data) continue;
+
+		const id = `${jobName}_${crypto.randomUUID().slice(0, 5)}`;
 		try {
-			// clean queue
-			await new Queue(jobName, {
-				connection: { host, port: Number(port) }
-			}).obliterate();
-		} catch (_) {}
-	}
-
-	// create the worker
-	const worker = new Worker(
-		jobName,
-		async (job) => {
-			console.log(job.id);
-			await (jobHandler.default as any)(job.data, `${jobName}_${job.id}`);
-		},
-		{
-			connection: {
-				host,
-				port: Number(port)
-			}
+			const data = JSON.parse(raw_data);
+			await jobHandler.default(data, id);
+		} catch (e) {
+			console.error(`${jobName}:${id} -> ${e}`);
+			continue;
 		}
-	);
 
-	// add listeners
-	worker.on('completed', (job, _) => console.log(`[${jobName}_${job.id}] completed`));
-	worker.on('failed', (job, error) => console.error(`[${jobName}_${(job ?? { id: 0 }).id}] ${error.message}`));
-	worker.on('ready', () => console.log(`loaded '${jobName}'`));
-}
+		await redis.LREM(`${jobName}_temp`, 1, raw_data);
+	}
+});

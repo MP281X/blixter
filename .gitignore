@@ -8,5 +8,4 @@ vite.config.ts.*
 
 # others
 .env
-cache
 node_modules

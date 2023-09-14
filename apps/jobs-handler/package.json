@@ -8,14 +8,13 @@
 	],
 	"scripts": {
 		"dev": "bun --watch index.ts",
-		"build": "bun build index.ts --outdir ./build --target node --minify",
+		"build": "bun build index.ts --outdir ./build --target bun --minify",
 		"preview": "bun run build && bun ./build/index.js"
 	},
 	"dependencies": {
-		"bullmq": "^4.7.2",
+		"redis": "^4.6.7",
 		"s3": "workspace:*",
 		"db": "workspace:*",
-		"jobs": "workspace:*",
 		"ffmpeg": "workspace:*"
 	}
 }

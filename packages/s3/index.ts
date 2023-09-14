@@ -2,7 +2,7 @@ import { S3, S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/clien
 import fs from 'fs';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import crypto from 'crypto';
-import { watch } from 'fs/promises';
+import { watch, writeFile } from 'fs/promises';
 
 const s3Client = new S3Client({
 	endpoint: 'https://eu2.contabostorage.com',
@@ -106,7 +106,7 @@ export const download = async (type: FileType, id: string, path: string) => {
 	const res = await fetch(url, { timeout: false });
 	if (!res.ok) throw new Error(`unable to download ${type}:${id}`);
 
-	await Bun.write(`${process.cwd()}/.cache/${path}`, res);
+	await writeFile(`${process.cwd()}/.cache/${path}`, await res.arrayBuffer());
 };
 
 export const listFiles = async (type: FileType, id: string = '') => {

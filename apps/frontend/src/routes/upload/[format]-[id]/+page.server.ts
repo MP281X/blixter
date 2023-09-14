@@ -1,5 +1,5 @@
 import type { Actions, PageServerLoad } from './$types';
-import { rawAudio, rawVideo } from 'jobs';
+import { rawVideo } from 'jobs';
 import { db, newVideo } from 'db';
 import { fail, redirect } from '@sveltejs/kit';
 
@@ -29,7 +29,6 @@ export const actions: Actions = {
 		if (!res) return fail(400, { error: 'invalid username or password' });
 
 		await rawVideo({ id: res.id, format: data._format });
-		await rawAudio({ id: res.id, format: data._format });
 
 		throw redirect(303, '/');
 	}

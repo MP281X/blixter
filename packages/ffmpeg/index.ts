@@ -1,16 +1,13 @@
-import fs from 'fs';
-import process from 'process';
-
 // extract the video info
 type GetVideoInfo = { jobID: string; file: string };
-export const getVideoInfo = ({ jobID, file }: GetVideoInfo) => {
-	const ffprobe = Bun.spawnSync(['ffprobe', '-v', 'quiet', '-print_format', 'json', '-show_format', '-show_streams', '-count_frames', file], {
+export const getVideoInfo = async ({ jobID, file }: GetVideoInfo) => {
+	const ffprobe = Bun.spawn(['ffprobe', '-v', 'quiet', '-print_format', 'json', '-show_format', '-show_streams', '-count_frames', file], {
 		stderr: 'ignore',
 		cwd: `${process.cwd()}/.cache/${jobID}`
 	});
-	if (!ffprobe.success.valueOf()) throw new Error('unable to get the file info');
 
-	const fileInfo = JSON.parse(ffprobe.stdout.toString())['streams'][0];
+	if ((await ffprobe.exited) !== 0) throw new Error('unable to get the file info');
+	const fileInfo = (await new Response(ffprobe.stdout).json())['streams'][0];
 
 	console.log(`[${jobID}] extracted the video info`);
 	return {

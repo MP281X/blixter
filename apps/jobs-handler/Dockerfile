@@ -2,6 +2,9 @@ FROM oven/bun
 ENV NODE_ENV production
 WORKDIR /app
 
+# install ffmpeg
+RUN apt update -y && apt install -y ffmpeg
+
 # copy the build output
 COPY ./build/index.js ./index.js
 

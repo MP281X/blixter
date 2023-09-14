@@ -7,6 +7,6 @@
 		"../../apps/jobs-handler/src/*.ts"
 	],
 	"dependencies": {
-		"bullmq": "^4.7.2"
+		"redis": "^4.6.7"
 	}
 }

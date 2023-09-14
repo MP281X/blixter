@@ -1,5 +1,4 @@
 import fs from 'fs';
-import process from 'process';
 
 // custom logger
 const log = async (title: string, input: string | Uint8Array | ReadableStream<Uint8Array>, color: number = 91) => {
@@ -12,12 +11,10 @@ const log = async (title: string, input: string | Uint8Array | ReadableStream<Ui
 		msg.split('\n').forEach((txt) => {
 			txt = txt.replaceAll('➜', '').trim();
 			if (txt === '') return;
-			if (txt.includes('VITE') || txt.includes('use --host to expose')) return;
+			if (txt.includes('VITE') || txt.includes('use --host to expose') || txt.includes('✨')) return;
+			if (txt.includes('./.svelte-kit/tsconfig.json') || txt.includes('╵') || txt.includes('tsconfig.json:2:12:')) return;
 
-			if (color === 91 && Bun.env.NODE_ENV === 'production') {
-				console.error(`\x1b[${color}m${title} ➜ \x1b[0m${txt}`);
-				process.exit(1);
-			} else console.log(`\x1b[${color}m${title} ➜ \x1b[0m${txt}`);
+			console.log(`\x1b[${color}m${title} ➜ \x1b[0m${txt}`);
 		});
 	};
 
@@ -46,23 +43,21 @@ const execCmd = async ({ title, color, cmd, sync, cwd }: ExecCmdType) => {
 
 	if (sync) {
 		const output = Bun.spawnSync(cmd, {
-			onExit: () => console.log(`\x1b[91m${title} ➜ \x1b[0mEXIT`),
 			cwd: cwd ?? '.',
 			env: {
 				...Bun.env,
-				NODE_ENV: process.argv[2]! === 'build' ? 'production' : 'development'
+				NODE_ENV: Bun.argv[2]! === 'build' ? 'production' : 'development'
 			}
 		});
 		return await Promise.all([log(title, output.stdout, color), log(title, output.stderr)]);
 	}
 
 	const output = Bun.spawn(cmd, {
-		onExit: () => console.log(`\x1b[91m${title} ➜ \x1b[0mEXIT`),
 		cwd: cwd ?? '.',
 		stderr: 'pipe',
 		env: {
 			...Bun.env,
-			NODE_ENV: process.argv[2]! === 'build' ? 'production' : 'development'
+			NODE_ENV: Bun.argv[2]! === 'build' ? 'production' : 'development'
 		}
 	});
 
@@ -84,7 +79,7 @@ const findProjects = async (dir: string = '.') => {
 
 	for (const file of files) {
 		try {
-			if (['build', 'dist', '.cache'].includes(file) || file.includes('.g.ts')) {
+			if (['build', 'dist', '.cache', '.svelte-kit'].includes(file) || file.includes('.g.ts')) {
 				fs.rmSync(`${dir}/${file}`, { recursive: true, force: true });
 
 				log(`delete:${dir.replace('./packages/', '').replace('./apps/', '').replace('/src', '')}`, file);
@@ -127,13 +122,32 @@ const runScript = async (project: ProjectsType, script: 'codegen' | (string & {}
 			cwd
 		});
 
-		if (process.argv[2]! === 'dev')
+		if (Bun.argv[2]! === 'dev')
 			execCmd({
 				title: `codegen:${name}`,
 				cmd: ['bun', 'x', 'nodemon', '--config', '../../nodemon.json', ...codegen.map((x) => ['--watch', x]).flat(1)],
 				color: 90,
 				cwd
 			});
+	}
+
+	if (script === 'lint') {
+		if (scripts.includes(script))
+			await execCmd({
+				title: `lint:${project.name}`,
+				cmd: `bun run --silent ${script}`,
+				cwd: project.cwd,
+				sync: true
+			});
+
+		await execCmd({
+			title: `tsc:${project.name}`,
+			cmd: 'bun x tsc --noEmit',
+			cwd: project.cwd,
+			sync: true
+		});
+
+		return;
 	}
 
 	if (scripts.includes(script))
@@ -151,7 +165,7 @@ const projects = await findProjects();
 const prettier_args = '--plugin prettier-plugin-svelte . --log-level error --ignore-path .gitignore';
 await execCmd({
 	title: 'lint',
-	cmd: `bun x prettier ${prettier_args}  --${['build', 'preview', 'test'].includes(process.argv[2]!) ? 'check' : 'write'} .`,
+	cmd: `bun x prettier ${prettier_args}  --${['build', 'preview', 'test'].includes(Bun.argv[2]!) ? 'check' : 'write'} .`,
 	sync: true
 });
 
@@ -159,22 +173,17 @@ await execCmd({
 for (const project of projects) await runScript(project, 'codegen');
 
 // check types
-if (['build', 'preview'].includes(process.argv[2]!)) {
+if (['build', 'preview'].includes(Bun.argv[2]!)) {
 	for (const project of projects) {
+		if (project.name === 'scripts') continue;
 		runScript(project, 'lint');
-		await execCmd({
-			title: `tsc:${project.name}`,
-			cmd: 'bun x tsc --noEmit',
-			cwd: project.cwd,
-			sync: true
-		});
 	}
 }
 
 // run the scripts
-for (const project of projects) runScript(project, process.argv[2]!);
+for (const project of projects) runScript(project, Bun.argv[2]!);
 
-if (process.argv[2] === 'test') {
+if (Bun.argv[2] === 'test') {
 	console.clear();
-	Bun.spawn(['bun', '--silent', 'test', process.argv[4] ?? ''], { stdout: 'inherit', stderr: 'inherit', cwd: process.argv[3] ?? process.cwd() });
+	Bun.spawn(['bun', '--silent', 'test', Bun.argv[4] ?? ''], { stdout: 'inherit', stderr: 'inherit', cwd: Bun.argv[3] ?? process.cwd() });
 }

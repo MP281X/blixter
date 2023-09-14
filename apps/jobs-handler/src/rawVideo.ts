@@ -1,7 +1,7 @@
 import { db } from 'db';
 import fs from 'fs';
 import { download, upload, deleteFile } from 's3';
-import { getVideoInfo, convertVideo } from 'ffmpeg';
+import { getVideoInfo, convertVideo, convertAudio } from 'ffmpeg';
 
 type Input = {
 	id: string;
@@ -20,10 +20,14 @@ export default async ({ id, format }: Input, jobID: string) => {
 	console.log(`[${jobID}] downloaded the raw file`);
 
 	// get the video info
-
-	const info = getVideoInfo({ file: `raw.${format}`, jobID });
+	const info = await getVideoInfo({ file: `raw.${format}`, jobID });
 	if (info.resolution < 360) throw new Error('invalid resolution');
 	console.log(`[${jobID}] extracted the video information`);
+
+	// extract the audio file and upload it
+	await convertAudio({ jobID, file: `raw.${format}` });
+	await upload('raw_audios', id, `${jobID}/audio.mp3`);
+	console.log(`[${jobID}] uploaded the audio`);
 
 	// generate the hls index file based on the available resolutions
 	let indexFile = '#EXTM3U\n';
