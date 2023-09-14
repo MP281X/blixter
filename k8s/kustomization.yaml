@@ -4,6 +4,6 @@ resources:
   - frontend.yaml
   - job-handler.yaml
   - namespace.yaml
-  - postgres.yaml
-  - redis.yaml
+  - postgres.yaml # 10.43.0.206
+  - redis.yaml # 10.43.0.205
   - secrets.yaml

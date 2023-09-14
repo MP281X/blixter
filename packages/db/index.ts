@@ -14,6 +14,11 @@ export const db = new Kysely<DB>({
 	})
 });
 
+process.on('exit', async () => {
+	await db.destroy();
+	console.log('db closed');
+});
+
 // user
 export const newUser = validator('users', 'required', {
 	username: z.string().toLowerCase().trim().min(3).max(20),

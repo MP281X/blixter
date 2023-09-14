@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DEPLOYMENTS=("redis" "postgres")
+DEPLOYMENTS=("redis" "postgres" "cp-kafka")
 for deployment in "${DEPLOYMENTS[@]}"; do
     # Delete the deployment
     kubectl delete deployment "$deployment" -n blixter

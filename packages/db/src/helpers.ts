@@ -50,9 +50,14 @@ export const validator = <Table extends keyof DB, Req extends 'optional' | 'requ
 
 	return {
 		schema: formDefaults,
-		validate: async <Input extends InputSchema<Schema>>(formData: Promise<FormData>, override: Partial<Input> = {}): ValidatorType<Input> => {
+		validate: async <Input extends InputSchema<Schema>>(
+			formData: Promise<FormData> | undefined,
+			override: Partial<Input> = {}
+		): ValidatorType<Input> => {
 			try {
+				if (formData === undefined) formData = new Promise((resolve, _) => resolve(new FormData()));
 				const rawInput: Record<string, unknown> = Object.fromEntries(await formData.catch((_) => new FormData()));
+
 				Object.entries(override).forEach(([key, value]) => (rawInput[key] = value));
 				const res: any = await schema.parseAsync(rawInput);
 
@@ -74,7 +79,7 @@ export const validator = <Table extends keyof DB, Req extends 'optional' | 'requ
 };
 
 export const hashPassword = (password: string) => {
-	const salt = 'your_fixed_salt_here';
+	const salt = process.env.SALT;
 	const hash = createHash('sha256');
 	hash.update(password + salt);
 	return hash.digest('hex');

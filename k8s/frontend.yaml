@@ -15,11 +15,7 @@ spec:
         - name: frontend
           image: ghcr.io/mp281x/blixter-frontend:latest
           ports: [containerPort: 3000]
-          env:
-            - { name: REDIS_URL, valueFrom: { secretKeyRef: { name: 'frontend', key: 'REDIS_URL' } } }
-            - { name: POSTGRES_URL, valueFrom: { secretKeyRef: { name: 'frontend', key: 'POSTGRES_URL' } } }
-            - { name: S3_KEY, valueFrom: { secretKeyRef: { name: 'frontend', key: 'S3_KEY' } } }
-            - { name: S3_SECRET, valueFrom: { secretKeyRef: { name: 'frontend', key: 'S3_SECRET' } } }
+          envFrom: [{ secretRef: { name: frontend } }]
 
 ---
 apiVersion: v1

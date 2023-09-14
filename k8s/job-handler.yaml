@@ -14,8 +14,4 @@ spec:
       containers:
         - name: job-handler
           image: ghcr.io/mp281x/job-handler:latest
-          env:
-            - { name: REDIS_URL, valueFrom: { secretKeyRef: { name: 'job-handler', key: 'REDIS_URL' } } }
-            - { name: POSTGRES_URL, valueFrom: { secretKeyRef: { name: 'job-handler', key: 'POSTGRES_URL' } } }
-            - { name: S3_KEY, valueFrom: { secretKeyRef: { name: 'job-handler', key: 'S3_KEY' } } }
-            - { name: S3_SECRET, valueFrom: { secretKeyRef: { name: 'job-handler', key: 'S3_SECRET' } } }
+          envFrom: [{ secretRef: { name: job-handler } }]

@@ -24,6 +24,13 @@ const s3 = new S3({
 	}
 });
 
+process.on('exit', () => {
+	s3Client.destroy();
+	s3.destroy();
+
+	console.log('s3 closed');
+});
+
 const Bucket = 'blixter';
 export type FileType = 'images' | 'raw_images' | 'videos' | 'raw_videos' | 'raw_audios';
 
