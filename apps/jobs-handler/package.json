@@ -15,6 +15,7 @@
 		"redis": "^4.6.7",
 		"s3": "workspace:*",
 		"db": "workspace:*",
-		"ffmpeg": "workspace:*"
+		"ffmpeg": "workspace:*",
+		"realtime": "workspace:*"
 	}
 }

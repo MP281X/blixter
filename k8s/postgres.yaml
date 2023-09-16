@@ -13,13 +13,9 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:latest
+          image: postgres:15-alpine
           ports: [containerPort: 5432]
           envFrom: [{ secretRef: { name: postgres } }]
-      #     volumeMounts: [{ name: data, mountPath: /var/lib/postgresql }]
-      # volumes:
-      #   - name: data
-      #     persistentVolumeClaim: { claimName: postgres }
 
 ---
 apiVersion: v1

@@ -20,7 +20,7 @@
 
 				uploadController.upload.addEventListener('progress', (e) => (uploadedPercent = Math.floor((e.loaded / e.total) * 100)));
 
-				uploadController.addEventListener('load', (e) => resolve(uploadController!.status));
+				uploadController.addEventListener('load', (_) => resolve(uploadController!.status));
 				uploadController.addEventListener('error', (e) => reject(e));
 				uploadController.send(file);
 			});
@@ -52,7 +52,7 @@
 
 		{#if files && files.length === 1}
 			<button
-				class="relative h-full w-full aspect-video flex hover:border-orange border-4 border-black transition-colors duration-200"
+				class="relative h-full w-full aspect-video flex hover:border-orange border-[5px] border-black transition-colors duration-200"
 				on:click={cancelUpload}>
 				<video src={URL.createObjectURL(files[0])} width="100%" autoplay muted loop class="aspect-video object-cover" />
 				<h3 class="absolute bg-black h-full w-full bg-opacity-70 flex justify-center items-center text-5xl">{uploadedPercent}%</h3>

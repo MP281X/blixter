@@ -20,7 +20,7 @@ Object.entries(jobs).forEach(async ([jobName, jobHandler]) => {
 		const id = `${jobName}_${crypto.randomUUID().slice(0, 5)}`;
 		try {
 			const data = JSON.parse(raw_data);
-			await jobHandler.default(data, id);
+			await jobHandler.default(data);
 		} catch (e) {
 			console.error(`${jobName}:${id} -> ${e}`);
 			continue;

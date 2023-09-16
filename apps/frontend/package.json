@@ -24,6 +24,7 @@
 		"hls.js": "^1.4.12",
 		"db": "workspace:*",
 		"jobs": "workspace:*",
-		"s3": "workspace:*"
+		"s3": "workspace:*",
+		"realtime": "workspace:*"
 	}
 }

@@ -20,16 +20,11 @@ for (const file of fileList) {
 }
 
 generatedData.unshift(`
-import { type RedisClientType, createClient } from 'redis';
+import { createClient } from 'redis';
 
-let redis: RedisClientType;
-
-if (process.env.REDIS_URL) {
-	redis = createClient({ url: process.env.REDIS_URL! });
-	await redis.connect();
-
-	process.on('exit', async () => await redis.disconnect());
-}
+const redis = createClient({ url: process.env.REDIS_URL! });;
+await redis.connect();
+process.on('exit', async () => await redis.disconnect());
 `);
 
 fs.writeFileSync('./index.g.ts', generatedData.join('\n'));

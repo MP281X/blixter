@@ -1,7 +1,7 @@
 {
 	"name": "scripts",
 	"scripts": {
-		"db": "bash ./db.sh",
+		"reset": "bash ./reset.sh",
 		"secrets": "bash ./secrets.sh"
 	}
 }
