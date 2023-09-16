@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+  namespace: blixter
+  labels: { app: minio }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector: { matchLabels: { app: minio } }
+  template:
+    metadata: { labels: { app: minio } }
+    spec:
+      containers:
+        - name: minio
+          image: quay.io/minio/minio:latest
+          ports: [{ containerPort: 9090 }, { containerPort: 9000 }]
+          args: ['server', '/data', '--console-address', ':9090']
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+  namespace: blixter
+spec:
+  selector: { app: minio }
+  ports: [{ port: 9090, name: minio-ui, targetPort: 9090 }, { port: 9000, name: minio, targetPort: 9000 }]
+  clusterIP: 10.43.0.207
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: minio
+  namespace: blixter
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`minio-blixter.mp281x.xyz`)
+      kind: Rule
+      services: [{ name: minio, port: 9090 }]
