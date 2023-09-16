@@ -78,8 +78,9 @@ export const validator = <Table extends keyof DB, Req extends 'optional' | 'requ
 	};
 };
 
+const env = typeof Bun !== 'undefined' ? Bun.env : process.env;
 export const hashPassword = (password: string) => {
-	const salt = process.env.SALT;
+	const salt = env.SALT;
 	const hash = createHash('sha256');
 	hash.update(password + salt);
 	return hash.digest('hex');

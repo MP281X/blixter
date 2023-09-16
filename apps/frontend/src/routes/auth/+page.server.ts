@@ -12,6 +12,8 @@ export const load: PageServerLoad = async ({ cookies }) => {
 	return { newUserSchema: newUser.schema, findUserSchema: findUser.schema };
 };
 
+const env = typeof Bun !== 'undefined' ? Bun.env : process.env;
+
 export const actions: Actions = {
 	login: async ({ request, cookies }) => {
 		const { data, errors } = await findUser.validate(request.formData());
@@ -31,7 +33,7 @@ export const actions: Actions = {
 		cookies.set('auth_token', token, {
 			path: '/',
 			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
+			secure: env.NODE_ENV === 'production',
 			sameSite: 'strict',
 			maxAge: 60 * 60 * 24
 		});
@@ -51,7 +53,7 @@ export const actions: Actions = {
 		cookies.set('auth_token', token, {
 			path: '/',
 			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
+			secure: env.NODE_ENV === 'production',
 			sameSite: 'strict',
 			maxAge: 60 * 60 * 24
 		});

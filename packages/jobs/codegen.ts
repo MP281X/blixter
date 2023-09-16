@@ -22,7 +22,8 @@ for (const file of fileList) {
 generatedData.unshift(`
 import { createClient } from 'redis';
 
-const redis = createClient({ url: process.env.REDIS_URL! });;
+const env = typeof Bun !== 'undefined' ? Bun.env : process.env;
+const redis = createClient({ url: env.REDIS_URL! });;
 await redis.connect();
 process.on('exit', async () => await redis.disconnect());
 `);

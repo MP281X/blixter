@@ -1,6 +1,7 @@
 import { createClient } from 'redis';
 
-export const redis = createClient({ url: process.env.REDIS_URL! });
+const env = typeof Bun !== 'undefined' ? Bun.env : process.env;
+export const redis = createClient({ url: env.REDIS_URL! });
 await redis.connect();
 
 process.on('exit', () => {

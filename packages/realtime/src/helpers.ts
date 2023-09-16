@@ -1,6 +1,8 @@
 import type EventEmitter from 'events';
 import type { RedisClientType } from 'redis';
 
+const env = typeof Bun !== 'undefined' ? Bun.env : process.env;
+
 export const sseHandler = <T extends Record<string, unknown>>(
 	channel: T extends { id: string } ? `${string}:id` : `${string}:*`,
 	auth?: (locals: Record<string, unknown>, ...args: T extends { id: string } ? [id: string] : []) => boolean
@@ -18,9 +20,7 @@ export const sseHandler = <T extends Record<string, unknown>>(
 	const initRedis = async () => {
 		if (!redis) {
 			const { createClient } = await import('redis');
-			console.log(process.env.REDIS_URL);
-			const url = !process.env.REDIS_URL || process.env.REDIS_URL === '' ? Bun.env.REDIS_URL! : process.env.REDIS_URL;
-			redis = createClient({ url });
+			redis = createClient({ url: env.REDIS_URL! });
 			await redis.connect();
 		}
 	};

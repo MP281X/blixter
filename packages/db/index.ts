@@ -6,10 +6,11 @@ import { hashPassword, validator } from './src/helpers';
 import { z } from 'zod';
 
 // db instance
+const env = typeof Bun !== 'undefined' ? Bun.env : process.env;
 export const db = new Kysely<DB>({
 	dialect: new PostgresDialect({
 		pool: new pg.Pool({
-			connectionString: process.env.POSTGRES_URL
+			connectionString: env.POSTGRES_URL
 		})
 	})
 });

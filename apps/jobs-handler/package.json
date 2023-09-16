@@ -8,7 +8,7 @@
 	],
 	"scripts": {
 		"dev": "bun --watch index.ts",
-		"build": "bun build index.ts --outdir ./build --target bun --minify",
+		"build": "bun build index.ts --outdir ./build --target bun",
 		"preview": "bun run build && bun ./build/index.js"
 	},
 	"dependencies": {

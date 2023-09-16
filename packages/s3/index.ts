@@ -4,13 +4,15 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import crypto from 'crypto';
 import { watch, writeFile } from 'fs/promises';
 
+const env = typeof Bun !== 'undefined' ? Bun.env : process.env;
+
 const s3Client = new S3Client({
 	endpoint: 'https://s3-blixter.mp281x.xyz',
 	forcePathStyle: true,
 	region: 'eu2',
 	credentials: {
-		accessKeyId: process.env.S3_KEY!,
-		secretAccessKey: process.env.S3_SECRET!
+		accessKeyId: env.S3_KEY!,
+		secretAccessKey: env.S3_SECRET!
 	}
 });
 
@@ -19,8 +21,8 @@ const s3 = new S3({
 	forcePathStyle: true,
 	region: 'eu2',
 	credentials: {
-		accessKeyId: process.env.S3_KEY!,
-		secretAccessKey: process.env.S3_SECRET!
+		accessKeyId: env.S3_KEY!,
+		secretAccessKey: env.S3_SECRET!
 	}
 });
 
