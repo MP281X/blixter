@@ -10,9 +10,22 @@ metadata:
   annotations: { sealedsecrets.bitnami.com/cluster-wide: 'true' }
 spec:
   encryptedData:
+    POSTGRES_DB: $(echo -n "blixter" | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
     POSTGRES_USER: $(echo -n $K8S_POSTGRES_USER | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
-    POSTGRES_DB: $(echo -n $K8S_POSTGRES_DB | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
     POSTGRES_PASSWORD: $(echo -n $K8S_POSTGRES_PASSWORD | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
+
+---
+#? minio
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: minio
+  namespace: blixter
+  annotations: { sealedsecrets.bitnami.com/cluster-wide: 'true' }
+spec:
+  encryptedData:
+    MINIO_ROOT_USER: $(echo -n $K8S_S3_KEY | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
+    MINIO_ROOT_PASSWORD: $(echo -n $K8S_S3_SECRET | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
 
 ---
 #? job-handler

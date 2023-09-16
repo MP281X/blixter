@@ -1,4 +1,5 @@
 import * as jobs from './src/index.g.ts';
+export * as jobs from './src/index.g.ts';
 import { createClient } from 'redis';
 
 const redis = createClient({ url: Bun.env.REDIS_URL! });
@@ -17,12 +18,11 @@ Object.entries(jobs).forEach(async ([jobName, jobHandler]) => {
 		const raw_data = await redis_queue.BRPOPLPUSH(jobName, `${jobName}_temp`, 0);
 		if (!raw_data) continue;
 
-		const id = `${jobName}_${crypto.randomUUID().slice(0, 5)}`;
 		try {
 			const data = JSON.parse(raw_data);
 			await jobHandler.default(data);
 		} catch (e) {
-			console.error(`${jobName}:${id} -> ${e}`);
+			console.error(`${jobName} -> ${e}`);
 			continue;
 		}
 

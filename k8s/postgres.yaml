@@ -16,6 +16,19 @@ spec:
           image: postgres:15-alpine
           ports: [containerPort: 5432]
           envFrom: [{ secretRef: { name: postgres } }]
+          volumeMounts: [{ name: data, mountPath: /var/lib/postgresql }]
+      volumes: [{ name: data, persistentVolumeClaim: { claimName: postgres } }]
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres
+  namespace: blixter
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: local-path
+  resources: { requests: { storage: 2Gi } }
 
 ---
 apiVersion: v1

@@ -1,7 +1,13 @@
 {
 	"name": "scripts",
 	"scripts": {
-		"reset": "bash ./reset.sh",
+		"reset": "bun ./reset.ts",
 		"secrets": "bash ./secrets.sh"
+	},
+	"dependencies": {
+		"jobs-handler": "workspace:*",
+		"cache": "workspace:*",
+		"s3": "workspace:*",
+		"db": "workspace:*"
 	}
 }

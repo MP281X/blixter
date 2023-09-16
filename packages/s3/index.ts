@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import { watch, writeFile } from 'fs/promises';
 
 const s3Client = new S3Client({
-	endpoint: 'https://eu2.contabostorage.com',
+	endpoint: 'https://s3-blixter.mp281x.xyz',
 	forcePathStyle: true,
 	region: 'eu2',
 	credentials: {
@@ -15,7 +15,7 @@ const s3Client = new S3Client({
 });
 
 const s3 = new S3({
-	endpoint: 'https://eu2.contabostorage.com',
+	endpoint: 'https://s3-blixter.mp281x.xyz',
 	forcePathStyle: true,
 	region: 'eu2',
 	credentials: {
@@ -28,11 +28,11 @@ process.on('exit', () => {
 	s3Client.destroy();
 	s3.destroy();
 
-	console.log('s3 closed');
+	console.log('s3 -> disconnect');
 });
 
 const Bucket = 'blixter';
-export type FileType = 'images' | 'raw_images' | 'videos' | 'raw_videos' | 'raw_audios';
+export type FileType = 'videos' | 'raw_videos' | 'raw_audios' | 'images' | 'raw_images' | 'demo';
 
 export const uploadUrl = async (type: FileType, id?: string) => {
 	if (id === undefined) id = crypto.randomUUID().toString();
@@ -116,7 +116,7 @@ export const listFiles = async (type: FileType, id: string = '') => {
 	});
 
 	return files.Contents?.map((obj) => ({
-		id: obj.Key?.replace(`${type}/${id}/`, '')!,
+		id: obj.Key?.replace(`${type}/`, '').replace(`${id === '' ? '---' : ''}/`, '')!,
 		uploadedAt: obj.LastModified!
 	}));
 };
@@ -129,14 +129,25 @@ export const deleteFile = async (type: FileType, id: string, folder: boolean = f
 		for (const file of res) {
 			await s3.deleteObject({
 				Bucket,
-				Key: `${type}/${id}/${file.id}`
+				Key: `${type}/${id}/${file.id}`.replaceAll('//', '/')
 			});
 		}
+
+		return;
 	}
+
 	await s3.deleteObject({
 		Bucket,
-		Key: `${type}/${id}`
+		Key: `${type}/${id}`.replaceAll('//', '/')
 	});
 
-	return id;
+	return;
+};
+
+export const moveFile = async (from: { type: FileType; id: string }, to: { type: FileType; id: string }) => {
+	await s3.copyObject({
+		Bucket,
+		Key: `${to.type}/${to.id}`,
+		CopySource: `${Bucket}/${from.type}/${from.id}`
+	});
 };

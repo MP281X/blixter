@@ -16,6 +16,20 @@ spec:
           image: quay.io/minio/minio:latest
           ports: [{ containerPort: 9090 }, { containerPort: 9000 }]
           args: ['server', '/data', '--console-address', ':9090']
+          envFrom: [{ secretRef: { name: minio } }]
+          volumeMounts: [{ name: data, mountPath: /data }]
+      volumes: [{ name: data, persistentVolumeClaim: { claimName: minio } }]
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: minio
+  namespace: blixter
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: local-path
+  resources: { requests: { storage: 2Gi } }
 
 ---
 apiVersion: v1
@@ -32,7 +46,7 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: minio
+  name: minio-ui
   namespace: blixter
   annotations:
     kubernetes.io/ingress.class: traefik
@@ -43,3 +57,19 @@ spec:
     - match: Host(`minio-blixter.mp281x.xyz`)
       kind: Rule
       services: [{ name: minio, port: 9090 }]
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: minio
+  namespace: blixter
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`s3-blixter.mp281x.xyz`)
+      kind: Rule
+      services: [{ name: minio, port: 9000 }]

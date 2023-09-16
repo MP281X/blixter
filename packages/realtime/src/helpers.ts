@@ -9,11 +9,18 @@ export const sseHandler = <T extends Record<string, unknown>>(
 	let msgEmitter: EventEmitter;
 	let redis: RedisClientType;
 
+	if (process.env.NODE_ENV !== 'production') {
+		if (channel.endsWith(':id')) channel = `${channel.slice(0, -3)}_dev:id` as any;
+		else channel = `${channel.slice(0, -2)}_dev:*` as any;
+	}
+
 	// connect to redis if not already connected
 	const initRedis = async () => {
 		if (!redis) {
 			const { createClient } = await import('redis');
-			redis = createClient({ url: process.env.REDIS_URL! });
+			console.log(process.env.REDIS_URL);
+			const url = !process.env.REDIS_URL || process.env.REDIS_URL === '' ? Bun.env.REDIS_URL! : process.env.REDIS_URL;
+			redis = createClient({ url });
 			await redis.connect();
 		}
 	};
@@ -57,7 +64,6 @@ export const sseHandler = <T extends Record<string, unknown>>(
 
 		// subscribe to the pub-sub
 		const channelName = channel.endsWith(':id') ? `${channel.slice(0, -3)}:*` : channel.slice(0, -2);
-		console.log();
 		await subscriber.pSubscribe(channelName, (message: string, ch: string) => {
 			// check if there is a user subscribed to the channel
 			if (msgEmitter.listenerCount(ch) > 0) {

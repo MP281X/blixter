@@ -14,9 +14,9 @@ export const db = new Kysely<DB>({
 	})
 });
 
-process.on('exit', async () => {
-	await db.destroy();
-	console.log('db closed');
+process.on('exit', () => {
+	db.destroy();
+	console.log('db -> disconnect');
 });
 
 // user

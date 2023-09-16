@@ -1,8 +1,12 @@
 import { createClient } from 'redis';
 
-const redis = createClient({ url: process.env.REDIS_URL! });
+export const redis = createClient({ url: process.env.REDIS_URL! });
 await redis.connect();
-process.on('exit', async () => await redis.disconnect());
+
+process.on('exit', () => {
+	redis.disconnect();
+	console.log('redis -> disconnect');
+});
 
 type ResType<Value extends Record<string, unknown> | undefined, T> = Promise<(Value extends undefined ? T : string) | undefined>;
 
