@@ -13,5 +13,5 @@ spec:
     spec:
       containers:
         - name: job-handler
-          image: ghcr.io/mp281x/job-handler:latest
+          image: ghcr.io/mp281x/blixter-jobs-handler:latest
           envFrom: [{ secretRef: { name: job-handler } }]

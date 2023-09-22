@@ -46,16 +46,20 @@
 	$: files && uploadFile();
 </script>
 
+<svelte:head>
+	<title>video upload</title>
+</svelte:head>
+
 <div class="flex items-center justify-center text-2xl font-bold text-white">
 	<div class="flex w-[300px] flex-col items-center justify-center space-y-5 border-4 border-black bg-white p-5">
 		<input type="file" id="file" bind:this={fileInput} bind:files hidden accept="video/mp4" />
 
 		{#if files && files.length === 1}
 			<button
-				class="relative h-full w-full aspect-video flex hover:border-orange border-[5px] border-black transition-colors duration-200"
+				class="hover:border-orange relative flex aspect-video h-full w-full border-4 border-black transition-colors duration-200"
 				on:click={cancelUpload}>
-				<video src={URL.createObjectURL(files[0])} width="100%" autoplay muted loop class="aspect-video object-cover" />
-				<h3 class="absolute bg-black h-full w-full bg-opacity-70 flex justify-center items-center text-5xl">{uploadedPercent}%</h3>
+				<video src={URL.createObjectURL(files[0])} autoplay muted loop class="aspect-video object-cover" />
+				<h3 class="absolute flex h-full w-full items-center justify-center bg-black bg-opacity-70 text-5xl">{uploadedPercent}%</h3>
 			</button>
 		{/if}
 

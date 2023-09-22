@@ -1,4 +1,5 @@
 import fs from 'fs';
+console.clear();
 
 // custom logger
 const log = async (title: string, input: string | Uint8Array | ReadableStream<Uint8Array>, color: number = 91) => {
@@ -13,6 +14,12 @@ const log = async (title: string, input: string | Uint8Array | ReadableStream<Ui
 			if (txt === '') return;
 			if (txt.includes('VITE') || txt.includes('use --host to expose') || txt.includes('✨')) return;
 			if (txt.includes('./.svelte-kit/tsconfig.json') || txt.includes('╵') || txt.includes('tsconfig.json:2:12:')) return;
+			if (txt.includes('NOTICE:') || txt.includes('DETAIL:') || txt.includes('drop cascade')) return;
+
+			if (color === 91 && Bun.argv[2]! !== 'dev') {
+				console.error(`\x1b[${color}m${title} ➜ \x1b[0m${txt}`);
+				process.exit(1);
+			}
 
 			console.log(`\x1b[${color}m${title} ➜ \x1b[0m${txt}`);
 		});
@@ -82,7 +89,7 @@ const findProjects = async (dir: string = '.') => {
 			if (['build', 'dist', '.cache', '.svelte-kit'].includes(file) || file.includes('.g.ts')) {
 				fs.rmSync(`${dir}/${file}`, { recursive: true, force: true });
 
-				log(`delete:${dir.replace('./packages/', '').replace('./apps/', '').replace('/src', '')}`, file);
+				log(`delete:${dir.replace('./packages/', '').replace('./apps/', '').replace('/src', '')}`, file, 95);
 				continue;
 			}
 		} catch (_) {}
@@ -173,7 +180,7 @@ await execCmd({
 for (const project of projects) await runScript(project, 'codegen');
 
 // check types
-if (['build', 'preview'].includes(Bun.argv[2]!)) {
+if (['reset', 'build', 'preview'].includes(Bun.argv[2]!)) {
 	for (const project of projects) {
 		if (project.name === 'scripts') continue;
 		runScript(project, 'lint');
@@ -184,6 +191,5 @@ if (['build', 'preview'].includes(Bun.argv[2]!)) {
 for (const project of projects) runScript(project, Bun.argv[2]!);
 
 if (Bun.argv[2] === 'test') {
-	console.clear();
 	Bun.spawn(['bun', '--silent', 'test', Bun.argv[4] ?? ''], { stdout: 'inherit', stderr: 'inherit', cwd: Bun.argv[3] ?? process.cwd() });
 }

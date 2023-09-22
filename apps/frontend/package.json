@@ -21,6 +21,7 @@
 	"dependencies": {
 		"@egoist/tailwindcss-icons": "^1.1.0",
 		"@iconify-json/ph": "^1.1.6",
+		"zod": "^3.22.2",
 		"hls.js": "^1.4.12",
 		"db": "workspace:*",
 		"jobs": "workspace:*",

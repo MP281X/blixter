@@ -1,3 +1,5 @@
 import { sseHandler } from './src/helpers';
 
-export const uploadStatus = sseHandler<{ msg: string; conversion?: number; id: string }>('uploadStatus:id');
+export const uploadStatus = sseHandler<{ status: 'start' | 'converting' | 'end'; percentage?: number; video_id: string; id: string }>(
+	'uploadStatus:id'
+);

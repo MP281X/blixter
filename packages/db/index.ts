@@ -1,6 +1,6 @@
 // @ts-expect-error
 import pg from 'pg';
-import { Kysely, PostgresDialect } from 'kysely';
+import { Kysely, PostgresDialect, sql } from 'kysely';
 import type { DB } from './index.g.d.ts';
 import { hashPassword, validator } from './src/helpers';
 import { z } from 'zod';
@@ -14,6 +14,8 @@ export const db = new Kysely<DB>({
 		})
 	})
 });
+
+export { sql };
 
 process.on('exit', () => {
 	db.destroy();
@@ -34,7 +36,7 @@ export const findUser = validator('users', 'optional', {
 
 // db
 export const newVideo = validator('videos', 'optional', {
-	name: z.string().min(5).max(20),
+	title: z.string().min(5).max(20),
 	description: z.string().max(500),
 	_id: z.string().uuid().nonempty({ message: 'video not found' }),
 	_format: z.enum(['mp4'], { invalid_type_error: 'video not found' })

@@ -20,7 +20,7 @@ export const actions: Actions = {
 			.values({
 				user_id: locals.user.id,
 				id: data._id,
-				name: data.name,
+				title: data.title,
 				description: data.description
 			})
 			.returning(['id'])
@@ -28,7 +28,7 @@ export const actions: Actions = {
 
 		if (!res) return fail(400, { error: 'invalid username or password' });
 
-		await rawVideo({ id: res.id, format: data._format });
+		await rawVideo({ id: locals.user.id, video_id: res.id, format: data._format });
 
 		throw redirect(303, '/');
 	}

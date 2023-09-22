@@ -7,6 +7,10 @@
 	export let login: boolean = true;
 </script>
 
+<svelte:head>
+	<title>{login ? 'Log In' : 'Sign Up'}</title>
+</svelte:head>
+
 <div class="flex flex-col items-center justify-center">
 	{#if login}
 		<FormHandler action="login" schema={data.findUserSchema} errors={form} btn_text="Log In">

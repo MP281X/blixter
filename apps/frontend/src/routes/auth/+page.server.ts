@@ -3,12 +3,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import { newUser, findUser, db } from 'db';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ cookies }) => {
-	const token = cookies.get('auth_token');
-	if (token) {
-		cookies.delete('auth_token');
-		await userCache(token, undefined, 'delete');
-	}
+export const load: PageServerLoad = async () => {
 	return { newUserSchema: newUser.schema, findUserSchema: findUser.schema };
 };
 

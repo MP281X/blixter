@@ -6,7 +6,7 @@ WORKDIR /app
 RUN apt update -y && apt install -y ffmpeg
 
 # copy the build output
-COPY ./build/index.js ./index.js
+COPY apps/jobs-handler/build/index.js ./index.js
 
 # run the app
 CMD [ "bun", "index.js" ]

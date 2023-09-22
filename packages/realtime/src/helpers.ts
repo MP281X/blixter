@@ -1,8 +1,6 @@
 import type EventEmitter from 'events';
 import type { RedisClientType } from 'redis';
 
-const env = typeof Bun !== 'undefined' ? Bun.env : process.env;
-
 export const sseHandler = <T extends Record<string, unknown>>(
 	channel: T extends { id: string } ? `${string}:id` : `${string}:*`,
 	auth?: (locals: Record<string, unknown>, ...args: T extends { id: string } ? [id: string] : []) => boolean
@@ -11,14 +9,10 @@ export const sseHandler = <T extends Record<string, unknown>>(
 	let msgEmitter: EventEmitter;
 	let redis: RedisClientType;
 
-	if (process.env.NODE_ENV !== 'production') {
-		if (channel.endsWith(':id')) channel = `${channel.slice(0, -3)}_dev:id` as any;
-		else channel = `${channel.slice(0, -2)}_dev:*` as any;
-	}
-
 	// connect to redis if not already connected
 	const initRedis = async () => {
 		if (!redis) {
+			const env = typeof Bun !== 'undefined' ? Bun.env : process.env;
 			const { createClient } = await import('redis');
 			redis = createClient({ url: env.REDIS_URL! });
 			await redis.connect();

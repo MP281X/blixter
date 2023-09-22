@@ -20,12 +20,21 @@ for (const file of fileList) {
 }
 
 generatedData.unshift(`
-import { createClient } from 'redis';
+import { createClient, type RedisClientType } from 'redis';
 
 const env = typeof Bun !== 'undefined' ? Bun.env : process.env;
-const redis = createClient({ url: env.REDIS_URL! });;
-await redis.connect();
-process.on('exit', async () => await redis.disconnect());
+
+let redis: RedisClientType;
+
+if (env.REDIS_URL) {
+	redis = createClient({ url: env.REDIS_URL });
+	await redis.connect();
+
+	process.on('exit', () => {
+		redis.disconnect();
+		console.log('redis -> disconnect');
+	});
+}
 `);
 
 fs.writeFileSync('./index.g.ts', generatedData.join('\n'));
