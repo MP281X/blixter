@@ -41,7 +41,7 @@ export default async ({ id, video_id, format }: Input) => {
 		await upload('images', video_id, `${video_id}/preview.png`);
 		log(video_id, 'extracted the preview img');
 
-		await uploadStatus.send({ id, video_id, status: 'start' });
+		await uploadStatus.send(id, { video_id, status: 'start' });
 
 		// generate the hls index file based on the available resolutions
 		let indexFile = '#EXTM3U\n';
@@ -65,7 +65,7 @@ export default async ({ id, video_id, format }: Input) => {
 					file: `raw.${format}`,
 					resolution: '1080',
 					tot_frames: info.frames,
-					status: async (x) => await uploadStatus.send({ id, video_id, status: 'converting', percentage: x })
+					status: async x => await uploadStatus.send(id, { video_id, status: 'converting', percentage: x })
 				})
 			);
 			indexFile += '#EXT-X-STREAM-INF:BANDWIDTH=3500000,RESOLUTION=1920x1080\n1080.m3u8\n';
@@ -78,7 +78,7 @@ export default async ({ id, video_id, format }: Input) => {
 					file: `raw.${format}`,
 					resolution: '720',
 					tot_frames: info.frames,
-					status: async (x) => await uploadStatus.send({ id, video_id, status: 'converting', percentage: x })
+					status: async x => await uploadStatus.send(id, { video_id, status: 'converting', percentage: x })
 				})
 			);
 			indexFile += '#EXT-X-STREAM-INF:BANDWIDTH=2000000,RESOLUTION=1280x720\n720.m3u8\n';
@@ -91,7 +91,7 @@ export default async ({ id, video_id, format }: Input) => {
 					file: `raw.${format}`,
 					resolution: '360',
 					tot_frames: info.frames,
-					status: async (x) => await uploadStatus.send({ id, video_id, status: 'converting', percentage: x })
+					status: async x => await uploadStatus.send(id, { video_id, status: 'converting', percentage: x })
 				})
 			);
 			indexFile += '#EXT-X-STREAM-INF:BANDWIDTH=375000,RESOLUTION=640x360\n360.m3u8\n';
@@ -107,17 +107,9 @@ export default async ({ id, video_id, format }: Input) => {
 		log(video_id, 'uploaded all the segments');
 
 		// modify the conversion status
-		await db
-			.updateTable('videos')
-			.where('id', '=', video_id)
-			.set({
-				status: 'converted',
-				duration: info.duration,
-				max_res: maxRes!
-			})
-			.executeTakeFirstOrThrow();
+		await db.updateTable('videos').where('id', '=', video_id).set({ status: 'converted', duration: info.duration }).executeTakeFirstOrThrow();
 		log(video_id, 'updated the conversion status');
-		await uploadStatus.send({ id, video_id, status: 'end' });
+		await uploadStatus.send(id, { video_id, status: 'end' });
 
 		fs.rmSync(`${process.cwd()}/.cache/${video_id}`, { force: true, recursive: true });
 	} catch (e) {

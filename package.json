@@ -8,14 +8,13 @@
 	],
 	"scripts": {
 		"dev": "bun task-runner.ts dev",
-		"test": "bun task-runner.ts test",
 		"build": "bun task-runner.ts build",
 		"reset": "bun task-runner.ts reset",
 		"preview": "bun task-runner.ts preview",
 		"secrets": "bun task-runner.ts secrets"
 	},
 	"devDependencies": {
-		"bun-types": "^0.8.1",
+		"bun-types": "^1.0.3",
 		"nodemon": "^3.0.1",
 		"prettier": "^3.0.3",
 		"prettier-plugin-svelte": "^3.0.3",

@@ -1,10 +1,8 @@
 import type { ColumnType } from 'kysely';
 
-export type ConversionStatus = 'converted' | 'converting' | 'failed' | 'uploaded';
+export type ConversionStatus = 'converted' | 'converting' | 'failed' | 'to_upload' | 'uploaded';
 
 export type Generated<T> = T extends ColumnType<infer S, infer I, infer U> ? ColumnType<S, I | undefined, U> : ColumnType<T, T | undefined, T>;
-
-export type Resolutions = '1080p' | '360p' | '720p';
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
@@ -37,7 +35,6 @@ export interface Videos {
 	title: string;
 	description: string;
 	duration: Generated<number>;
-	max_res: Generated<Resolutions>;
 	status: Generated<ConversionStatus>;
 	created_at: Generated<Timestamp>;
 }

@@ -1,9 +1,11 @@
 {
+	"printWidth": 150,
 	"useTabs": true,
 	"singleQuote": true,
+	"quoteProps": "consistent",
 	"trailingComma": "none",
-	"printWidth": 150,
-	"bracketSameLine": true,
+	"arrowParens": "avoid",
 	"endOfLine": "auto",
+	"bracketSameLine": true,
 	"plugins": ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"]
 }

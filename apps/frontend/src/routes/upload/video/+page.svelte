@@ -18,10 +18,10 @@
 				uploadController = new XMLHttpRequest();
 				uploadController.open('PUT', data.upload.url);
 
-				uploadController.upload.addEventListener('progress', (e) => (uploadedPercent = Math.floor((e.loaded / e.total) * 100)));
+				uploadController.upload.addEventListener('progress', e => (uploadedPercent = Math.floor((e.loaded / e.total) * 100)));
 
-				uploadController.addEventListener('load', (_) => resolve(uploadController!.status));
-				uploadController.addEventListener('error', (e) => reject(e));
+				uploadController.addEventListener('load', _ => resolve(uploadController!.status));
+				uploadController.addEventListener('error', e => reject(e));
 				uploadController.send(file);
 			});
 

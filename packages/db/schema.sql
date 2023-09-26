@@ -23,15 +23,14 @@ create table subscribers (
 );
 
 create type resolutions as enum ('360p', '720p', '1080p');
-create type conversion_status as enum ('uploaded', 'converting', 'converted', 'failed');
+create type conversion_status as enum ('to_upload', 'uploaded', 'converting', 'converted', 'failed');
 create table videos (
   id uuid primary key default gen_random_uuid() not null,
   user_id uuid not null,
   title varchar(20) unique not null,
   description text not null,
   duration integer default 0 not null,
-  max_res resolutions default '360p' not null,
-  status conversion_status default 'uploaded' not null,
+  status conversion_status default 'to_upload' not null,
   created_at timestamp default CURRENT_TIMESTAMP not null,
 
   foreign key (user_id) references users(id) on delete cascade

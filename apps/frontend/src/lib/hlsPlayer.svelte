@@ -45,7 +45,7 @@
 			paused = false;
 		} catch {}
 
-		video_player.addEventListener('fullscreenchange', (_) => {
+		video_player.addEventListener('fullscreenchange', _ => {
 			if (document.fullscreenElement) full_screen = true;
 			else full_screen = false;
 		});
@@ -86,7 +86,7 @@
 	{#if current_time >= 0}
 		<input
 			type="range"
-			on:input={(x) => {
+			on:input={x => {
 				video_el.pause();
 				//@ts-ignore
 				video_el.currentTime = x.target.value;

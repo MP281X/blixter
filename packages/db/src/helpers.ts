@@ -56,7 +56,7 @@ export const validator = <Table extends keyof DB, Req extends 'optional' | 'requ
 		): ValidatorType<Input> => {
 			try {
 				if (formData === undefined) formData = new Promise((resolve, _) => resolve(new FormData()));
-				const rawInput: Record<string, unknown> = Object.fromEntries(await formData.catch((_) => new FormData()));
+				const rawInput: Record<string, unknown> = Object.fromEntries(await formData.catch(_ => new FormData()));
 
 				Object.entries(override).forEach(([key, value]) => (rawInput[key] = value));
 				const res: any = await schema.parseAsync(rawInput);
@@ -67,7 +67,7 @@ export const validator = <Table extends keyof DB, Req extends 'optional' | 'requ
 				const errors: Record<string, string> = {};
 
 				// error formatting
-				error.errors.forEach((err) => {
+				error.errors.forEach(err => {
 					if ((err.path[0] as string)[0] === '_') errors['error'] = `${(err.path[0] as string).slice(1)} is ${err.message}`;
 					else errors[err.path[0]!] = err.message;
 				});

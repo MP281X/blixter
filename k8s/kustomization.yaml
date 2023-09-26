@@ -2,7 +2,7 @@
 
 resources:
   - frontend.yaml
-  - job-handler.yaml
+  - jobs-handler.yaml
   - minio.yaml # 10.43.0.207
   - namespace.yaml
   - postgres.yaml # 10.43.0.206

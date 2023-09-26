@@ -44,7 +44,7 @@ export const convertVideo = async ({ id, file, resolution, tot_frames, status }:
 
 	for await (const chunk of cmd.stderr) {
 		let log = new TextDecoder().decode(chunk).split('\n');
-		log.forEach(async (txt) => {
+		log.forEach(async txt => {
 			if (!txt || txt.trim() === '') return;
 			if (txt.includes('Failed')) throw new Error(`unable to convert the video in ${resolution}`);
 			if (!txt.startsWith('frame=')) return;

@@ -9,7 +9,7 @@ const log = async (title: string, input: string | Uint8Array | ReadableStream<Ui
 	const read = (msg: string | Uint8Array) => {
 		if (typeof msg !== 'string') msg = new TextDecoder().decode(msg);
 
-		msg.split('\n').forEach((txt) => {
+		msg.split('\n').forEach(txt => {
 			txt = txt.replaceAll('➜', '').trim();
 			if (txt === '') return;
 			if (txt.includes('VITE') || txt.includes('use --host to expose') || txt.includes('✨')) return;
@@ -38,7 +38,6 @@ type ExecCmdType = {
 	cwd?: string;
 	sync?: boolean;
 };
-
 let colorCounter = 92;
 const execCmd = async ({ title, color, cmd, sync, cwd }: ExecCmdType) => {
 	if (typeof cmd === 'string') cmd = cmd.split(' ');
@@ -132,7 +131,7 @@ const runScript = async (project: ProjectsType, script: 'codegen' | (string & {}
 		if (Bun.argv[2]! === 'dev')
 			execCmd({
 				title: `codegen:${name}`,
-				cmd: ['bun', 'x', 'nodemon', '--config', '../../nodemon.json', ...codegen.map((x) => ['--watch', x]).flat(1)],
+				cmd: ['bun', 'x', 'nodemon', '--config', '../../nodemon.json', ...codegen.map(x => ['--watch', x]).flat(1)],
 				color: 90,
 				cwd
 			});

@@ -117,7 +117,7 @@ export const listFiles = async (type: FileType, id: string = '') => {
 		Prefix: `${type}/${id}`
 	});
 
-	return files.Contents?.map((obj) => ({
+	return files.Contents?.map(obj => ({
 		id: obj.Key?.replace(`${type}/`, '').replace(`${id === '' ? '---' : ''}/`, '')!,
 		uploadedAt: obj.LastModified!
 	}));
