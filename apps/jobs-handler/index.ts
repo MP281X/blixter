@@ -1,3 +1,4 @@
+import { rejects } from 'assert';
 import * as jobs from './src/index.g.ts';
 export * as jobs from './src/index.g.ts';
 import { createClient } from 'redis';
@@ -20,7 +21,26 @@ Object.entries(jobs).forEach(async ([jobName, jobHandler]) => {
 
 		try {
 			const data = JSON.parse(raw_data);
-			await jobHandler.default(data);
+			await new Promise((resolve, reject) => {
+				const timeoutId = setTimeout(
+					() => {
+						clearTimeout(timeoutId);
+						reject(new Error(`${jobName} -> timeut`));
+					},
+					30 * 60 * 1000
+				);
+
+				jobHandler
+					.default(data)
+					.then(() => {
+						clearTimeout(timeoutId);
+						resolve(undefined);
+					})
+					.catch(e => {
+						clearTimeout(timeoutId);
+						rejects(e);
+					});
+			});
 		} catch (e) {
 			console.error(`${jobName} -> ${e}`);
 			continue;

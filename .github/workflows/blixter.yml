@@ -38,7 +38,7 @@ jobs:
     needs: bun_build
     strategy:
       matrix:
-        name: [frontend, jobs-handler]
+        name: [frontend, jobs-handler, cron-jobs]
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:

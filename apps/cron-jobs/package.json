@@ -1,0 +1,21 @@
+{
+	"name": "cron-jobs",
+	"type": "module",
+	"main": "index.ts",
+	"types": "index.ts",
+	"codegen": [
+		"./src/*.ts"
+	],
+	"scripts": {
+		"dev": "bun --watch index.ts",
+		"build": "bun build index.ts --outdir ./build --target bun",
+		"preview": "bun run build && bun ./build/index.js"
+	},
+	"dependencies": {
+		"redis": "^4.6.7",
+		"cache": "workspace:*",
+		"jobs": "workspace:*",
+		"s3": "workspace:*",
+		"db": "workspace:*"
+	}
+}

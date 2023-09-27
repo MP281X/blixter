@@ -6,7 +6,7 @@ const basePath = '../../apps/jobs-handler/src';
 const fileList = fs.readdirSync(`${basePath}/`);
 for (const file of fileList) {
 	if (fs.statSync(`${basePath}/${file}`).isDirectory()) continue;
-	if (file.endsWith('.g.ts') || file.endsWith('.test.ts')) continue;
+	if (file.endsWith('.g.ts') || file.endsWith('.test.ts') || file.endsWith('.d.ts')) continue;
 
 	const jobName = file.split('.')[0];
 	const queueName = Bun.env.NODE_ENV !== 'production' ? jobName + '_dev' : jobName;

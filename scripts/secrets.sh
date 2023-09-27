@@ -28,11 +28,11 @@ spec:
     MINIO_ROOT_PASSWORD: $(echo -n $K8S_S3_SECRET | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
 
 ---
-#? job-handler
+#? jobs-handler
 apiVersion: bitnami.com/v1alpha1
 kind: SealedSecret
 metadata:
-  name: job-handler
+  name: jobs-handler
   namespace: blixter
   annotations: { sealedsecrets.bitnami.com/cluster-wide: 'true' }
 spec:
@@ -41,7 +41,21 @@ spec:
     POSTGRES_URL: $(echo -n $K8S_POSTGRES_URL | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
     S3_KEY: $(echo -n $K8S_S3_KEY | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
     S3_SECRET: $(echo -n $K8S_S3_SECRET | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
-    SALT: $(echo -n $K8S_SALT | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
+
+---
+#? cron-jobs
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: cron-jobs
+  namespace: blixter
+  annotations: { sealedsecrets.bitnami.com/cluster-wide: 'true' }
+spec:
+  encryptedData:
+    REDIS_URL: $(echo -n $K8S_REDIS_URL | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
+    POSTGRES_URL: $(echo -n $K8S_POSTGRES_URL | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
+    S3_KEY: $(echo -n $K8S_S3_KEY | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
+    S3_SECRET: $(echo -n $K8S_S3_SECRET | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
 
 ---
 #? frontend

@@ -22,11 +22,11 @@ console.log('cache:reset');
 await redis.FLUSHALL();
 
 console.log('s3:reset');
-await deleteFile('raw_videos', '', true);
-await deleteFile('videos', '', true);
-await deleteFile('raw_audios', '', true);
-await deleteFile('raw_images', '', true);
-await deleteFile('images', '', true);
+await deleteFile('raw_videos', '');
+await deleteFile('videos', '');
+await deleteFile('raw_audios', '');
+await deleteFile('raw_images', '');
+await deleteFile('images', '');
 
 console.log('db:seeding');
 const user = await db

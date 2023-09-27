@@ -1,6 +1,7 @@
 #? ip range 10.43.0.200-10.43.0.210
 
 resources:
+  - cron-jobs.yaml
   - frontend.yaml
   - jobs-handler.yaml
   - minio.yaml # 10.43.0.207

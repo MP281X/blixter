@@ -20,7 +20,7 @@ export default async ({ id, video_id, format }: Input) => {
 		log(video_id, 'deleting local and remote cache');
 		if (fs.existsSync(`${process.cwd()}/.cache/${video_id}`)) fs.rmSync(`${process.cwd()}/.cache/${video_id}`, { force: true, recursive: true });
 		fs.mkdirSync(`${process.cwd()}/.cache/${video_id}`, { recursive: true });
-		await deleteFile('videos', video_id, true);
+		await deleteFile('videos', video_id);
 
 		// download the raw video
 		await download('raw_videos', video_id, `${video_id}/raw.${format}`);

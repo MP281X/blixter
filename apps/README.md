@@ -3,9 +3,16 @@
 Blixter is composed by two main applications that handle all it's functionality
 
 ```sh
+├── cron-jobs    # Cronjobs
 ├── frontend    # Blixter frontend
 └── jobs        # Jobs hanlder
 ```
+
+## [cron-jobs](./cron-jobs)
+
+The `cron-jobs` wait for the configured time and execute a task
+
+This app handle the the failed jobs and clean unsed files and data in the db
 
 ## [frontend](./frontend)
 

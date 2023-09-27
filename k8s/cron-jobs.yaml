@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cron-jobs
+  namespace: blixter
+  labels: { app: cron-jobs }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector: { matchLabels: { app: cron-jobs } }
+  template:
+    metadata: { labels: { app: cron-jobs } }
+    spec:
+      containers:
+        - name: cron-jobs
+          image: ghcr.io/mp281x/blixter-cron-jobs:latest
+          envFrom: [{ secretRef: { name: cron-jobs } }]

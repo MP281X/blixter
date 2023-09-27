@@ -117,33 +117,30 @@ export const listFiles = async (type: FileType, id: string = '') => {
 		Prefix: `${type}/${id}`
 	});
 
-	return files.Contents?.map(obj => ({
-		id: obj.Key?.replace(`${type}/`, '').replace(`${id === '' ? '---' : ''}/`, '')!,
-		uploadedAt: obj.LastModified!
-	}));
+	return (files.Contents ?? []).map(obj => {
+		obj.Key = obj.Key!.replace(`${type}/`, '');
+		if (id.trim() !== '') obj.Key = obj.Key!.replace(`${id}/`, '');
+
+		return {
+			id: obj.Key!,
+			uploadedAt: obj.LastModified!
+		};
+	});
 };
 
-export const deleteFile = async (type: FileType, id: string, folder: boolean = false) => {
-	if (folder) {
-		const res = await listFiles(type, id);
-		if (!res) return;
-
-		for (const file of res) {
-			await s3.deleteObject({
-				Bucket,
-				Key: `${type}/${id}/${file.id}`.replaceAll('//', '/')
-			});
-		}
-
-		return;
+export const deleteFile = async (type: FileType, id: string) => {
+	const res = await listFiles(type, id);
+	for (const file of res ?? []) {
+		await s3.deleteObject({
+			Bucket,
+			Key: `${type}/${id}/${file.id}`.replaceAll('//', '/')
+		});
 	}
 
 	await s3.deleteObject({
 		Bucket,
 		Key: `${type}/${id}`.replaceAll('//', '/')
 	});
-
-	return;
 };
 
 export const moveFile = async (from: { type: FileType; id: string }, to: { type: FileType; id: string }) => {
