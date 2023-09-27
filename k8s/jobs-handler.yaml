@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: job-handler
+  name: jobs-handler
   namespace: blixter
-  labels: { app: job-handler }
+  labels: { app: jobs-handler }
 spec:
   replicas: 1
   revisionHistoryLimit: 1
-  selector: { matchLabels: { app: job-handler } }
+  selector: { matchLabels: { app: jobs-handler } }
   template:
-    metadata: { labels: { app: job-handler } }
+    metadata: { labels: { app: jobs-handler } }
     spec:
       containers:
-        - name: job-handler
+        - name: jobs-handler
           image: ghcr.io/mp281x/blixter-jobs-handler:latest
-          envFrom: [{ secretRef: { name: job-handler } }]
+          envFrom: [{ secretRef: { name: jobs-handler } }]
