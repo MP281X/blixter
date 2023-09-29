@@ -3,15 +3,7 @@
 	import Hls from 'hls.js';
 	import { onMount } from 'svelte';
 
-	export let video: {
-		id: string;
-		user_id: string;
-		title: string;
-		duration: number;
-		created_at: Date;
-		username: string;
-		views: number;
-	};
+	export let video: { id: string; duration: number };
 
 	let video_el: HTMLVideoElement;
 	let video_player: HTMLButtonElement;
@@ -63,14 +55,15 @@
 
 <button
 	bind:this={video_player}
-	class="flex w-full h-[min(100dvh, 100%)] aspect-video justify-center items-center bg-orange border-black border-4 relative"
+	class="bg-orange relative flex aspect-video items-center justify-center border-4 border-black"
+	style="height: min(75svh, (100svw - 2.5rem)/16*9)"
 	on:mouseenter={() => (menu = true)}
 	on:mouseleave={() => (menu = false)}>
-	<div class="border-orange h-[40%] aspect-square animate-spin rounded-full border-[4px] border-t-black absolute" />
+	<div class="border-orange absolute aspect-square h-[40%] animate-spin rounded-full border-[4px] border-t-black" />
 
 	<video
 		autoplay
-		class="absolute h-full w-full aspect-video object-cover"
+		class="absolute h-full w-full object-cover"
 		poster="/s3/images/{video.id}"
 		on:click={playPause}
 		on:dblclick={() => (full_screen ? document.exitFullscreen() : video_player.requestFullscreen())}
@@ -79,8 +72,8 @@
 	</video>
 
 	{#if full_screen}
-		<button class="h-[70%] absolute w-10 left-[-10px] cursor-none" on:mouseenter={() => (menu = false)} on:mouseleave={() => (menu = true)} />
-		<button class="h-[70%] absolute w-10 right-[-10px] cursor-none" on:mouseenter={() => (menu = false)} on:mouseleave={() => (menu = true)} />
+		<button class="absolute left-[-10px] h-[70%] w-10 cursor-none" on:mouseenter={() => (menu = false)} on:mouseleave={() => (menu = true)} />
+		<button class="absolute right-[-10px] h-[70%] w-10 cursor-none" on:mouseenter={() => (menu = false)} on:mouseleave={() => (menu = true)} />
 	{/if}
 
 	{#if current_time >= 0}
@@ -94,7 +87,7 @@
 			on:change={async () => {
 				if (!paused) await video_el.play();
 			}}
-			class="time-slider appearance-none cursor-pointer outline-none absolute z-4 bottom-0 w-full h-2 overflow-hidden border-t-4 border-black bg-grey"
+			class="time-slider z-4 bg-grey absolute bottom-0 h-2 w-full cursor-pointer appearance-none overflow-hidden border-t-4 border-black outline-none"
 			style="bottom: {menu || paused ? 2.5 : 0}rem"
 			bind:value={current_time}
 			min="0"
@@ -103,8 +96,8 @@
 	{/if}
 
 	{#if menu || paused}
-		<div class="absolute bottom-0 border-t-4 border-black bg-white font-bold flex justify-between px-5 items-center h-10 w-full">
-			<div class="flex gap-5 h-full justify-center items-center">
+		<div class="absolute bottom-0 flex h-10 w-full items-center justify-between border-t-4 border-black bg-white px-5 font-bold">
+			<div class="flex h-full items-center justify-center gap-5">
 				{#if video && current_time === video.duration}
 					<button on:click={playPause} class="i-ph-repeat-bold" />
 				{:else if paused || current_time === 0}
@@ -113,7 +106,7 @@
 					<button on:click={playPause} class="i-ph-pause-bold" />
 				{/if}
 
-				<button class="flex justify-center items-center gap-3 h-full pr-5 group">
+				<button class="group flex h-full items-center justify-center gap-3 pr-5">
 					<button
 						class={(() => {
 							if (!video_el || video_el.volume === 0) return 'i-ph-speaker-simple-x-bold';
@@ -132,13 +125,13 @@
 							min="0"
 							max="1"
 							step="0.0001"
-							class="volume-slider appearance-none w-[100px] h-[1rem] border-x-black border-4 outline-none cursor-pointer hidden group-hover:block"
+							class="volume-slider hidden h-[1rem] w-[100px] cursor-pointer appearance-none border-4 border-x-black outline-none group-hover:block"
 							bind:value={video_el.volume}
 							style="border-right: {video_el.volume === 1 ? 0 : 4}px solid #040404; border-left: {video_el.volume === 0 ? 0 : 4}px solid #040404" />
 					{/if}
 				</button>
 			</div>
-			<div class="flex gap-5 h-full justify-center items-center">
+			<div class="flex h-full items-center justify-center gap-5">
 				<div>{formatDuration(current_time)} - {formatDuration(video.duration)}</div>
 				<button
 					class={full_screen ? 'i-ph-arrows-in-simple-bold' : 'i-ph-arrows-out-simple-bold'}

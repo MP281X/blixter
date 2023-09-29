@@ -54,37 +54,37 @@
 	});
 </script>
 
-<a class="flex flex-col w-full bg-orange" href="/watch-{data.id}">
+<a class="bg-orange flex w-full flex-col" href="/watch-{data.id}">
 	<button
-		class="flex w-full aspect-video justify-center items-center bg-orange border-black border-4 relative"
+		class="bg-orange relative flex aspect-video w-full items-center justify-center border-4 border-black"
 		on:mouseenter={play}
 		on:mouseleave={stop}>
-		<div class="border-orange h-[40%] aspect-square animate-spin rounded-full border-[4px] border-t-black absolute" />
+		<div class="border-orange absolute aspect-square h-[40%] animate-spin rounded-full border-[4px] border-t-black" />
 
-		<video bind:this={video} autoplay muted loop class="absolute h-full w-full aspect-video object-cover" poster="/s3/images/{data.id}">
+		<video bind:this={video} autoplay muted loop class="absolute aspect-video h-full w-full object-cover" poster="/s3/images/{data.id}">
 			<track kind="captions" />
 		</video>
 
 		{#if currentTime > 0}
-			<div class="h-2 w-full flex absolute bottom-0 z-4">
-				<div class="h-full bg-orange border-t-4 border-r-4 border-black" style="width: {currentTime}%"></div>
+			<div class="z-4 absolute bottom-0 flex h-2 w-full">
+				<div class="bg-orange h-full border-r-4 border-t-4 border-black" style="width: {currentTime}%"></div>
 			</div>
 		{/if}
 
-		<div class="absolute h-full w-full bg-black bg-opacity-50 hover:bg-opacity-0 transition-all duration-300"></div>
+		<div class="absolute h-full w-full bg-black bg-opacity-50 transition-all duration-300 hover:bg-opacity-0"></div>
 
-		<div class="absolute bg-black text-white m-[12px] px-[6px] font-bold bottom-0 right-0 pointer-events-none">
+		<div class="pointer-events-none absolute bottom-0 right-0 m-[12px] bg-black px-[6px] font-bold text-white">
 			{formatDuration(remaining)}
 		</div>
 	</button>
 
-	<div class="h-16 flex flex-row gap-3 w-full bg-white border-4 border-black border-t-0 p-2">
-		<div class="aspect-square h-full border-4 border-black flex justify-center items-center">
+	<div class="flex h-16 w-full flex-row gap-3 border-4 border-t-0 border-black bg-white p-2">
+		<div class="flex aspect-square h-full items-center justify-center border-4 border-black">
 			<span class="i-ph-user-focus text-4xl"></span>
 			<img class="bg-white" src="/s3/images/{data.user_id}" alt="" on:error={imgError} />
 		</div>
 
-		<div class="flex flex-col justify-center items-start w-full">
+		<div class="flex w-full flex-col items-start justify-center">
 			<div class="font-bold">{data.title}</div>
 			<div class="text-base">{formatViews(data.views)} • {formatDate(data.created_at)}</div>
 		</div>

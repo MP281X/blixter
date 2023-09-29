@@ -10,6 +10,8 @@ metadata:
   annotations: { sealedsecrets.bitnami.com/cluster-wide: 'true' }
 spec:
   encryptedData:
+    TZ: $(echo -n "Europe/Rome" | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
+    PGTZ: $(echo -n "Europe/Rome" | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
     POSTGRES_DB: $(echo -n "blixter" | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
     POSTGRES_USER: $(echo -n $K8S_POSTGRES_USER | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
     POSTGRES_PASSWORD: $(echo -n $K8S_POSTGRES_PASSWORD | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)

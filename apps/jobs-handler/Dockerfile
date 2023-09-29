@@ -1,4 +1,5 @@
 FROM oven/bun:alpine
+ENV TZ=Europe/Rome
 ENV NODE_ENV production
 WORKDIR /app
 

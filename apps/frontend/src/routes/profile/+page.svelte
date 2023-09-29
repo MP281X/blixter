@@ -4,7 +4,7 @@
 	export let data;
 
 	const gridSpan = (key: string) => {
-		if (key === 'latest_upload' || key === 'watch_time') return 2;
+		if (key === 'latest_upload' || key === 'subscribers') return 2;
 		else return 1;
 	};
 </script>

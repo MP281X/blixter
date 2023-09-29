@@ -1,7 +1,7 @@
 import { db, sql } from 'db';
 import { profileCache } from 'cache';
 import type { PageServerLoad } from './$types';
-import { formatDate, formatWatchTime } from '$lib/helpers';
+import { formatDate, formatSubscribers, formatViews, formatWatchTime } from '$lib/helpers';
 import { z } from 'zod';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
@@ -65,10 +65,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		videos: video_tot,
 		latest_upload: formatDate(latest_upload),
 		uploaded: formatWatchTime(uploaded_tot),
-		views,
+		views: formatViews(views),
 		comments,
-		subscribers,
 		watch_time: formatWatchTime(watch_time),
+		subscribers: formatSubscribers(subscribers),
 		likes: likes - dislikes < 0 ? 0 : likes - dislikes
 	};
 
