@@ -68,6 +68,8 @@ export const upload = async (type: FileType, name: string, path?: string, abortC
 
 		try {
 			for await (let { filename } of watcher) {
+				if (!filename) continue;
+
 				filename = filename.replace('.tmp', '');
 				if (!fs.existsSync(`${dir}/${filename}`)) continue;
 

@@ -1,0 +1,10 @@
+{
+	"name": "ai",
+	"type": "module",
+	"main": "index.ts",
+	"types": "index.ts",
+	"dependencies": {
+		"openai": "^4.11.0",
+		"redis": "^4.6.7"
+	}
+}

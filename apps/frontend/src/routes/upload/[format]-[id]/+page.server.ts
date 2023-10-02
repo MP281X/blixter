@@ -2,6 +2,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { rawVideo } from 'jobs';
 import { db, newVideo } from 'db';
 import { fail, redirect } from '@sveltejs/kit';
+import { generateEmbedding } from 'ai';
 
 export const load: PageServerLoad = async () => {
 	return { schema: newVideo.schema };
@@ -28,6 +29,7 @@ export const actions: Actions = {
 
 		if (!res) return fail(400, { error: 'invalid username or password' });
 
+		await generateEmbedding('videos', res.id, data.title);
 		await rawVideo({ id: locals.user.id, video_id: res.id, format: data._format });
 
 		throw redirect(303, '/');

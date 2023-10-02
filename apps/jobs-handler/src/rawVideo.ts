@@ -3,6 +3,7 @@ import fs from 'fs';
 import { download, upload, deleteFile } from 's3';
 import { getVideoInfo, convertVideo, extractAudio, extractPreview } from 'ffmpeg';
 import { uploadStatus } from 'realtime';
+import { rawAudio } from 'jobs';
 
 type Input = {
 	id: string;
@@ -10,7 +11,7 @@ type Input = {
 	format: 'mp4';
 };
 
-const log = (id: string, msg: string) => console.log(`[${id.substring(0, 5)}] ${msg}`);
+const log = (id: string, msg: string) => console.log(`rawVideo [${id.substring(0, 5)}] ${msg}`);
 
 export default async ({ id, video_id, format }: Input) => {
 	// clear previous output
@@ -112,6 +113,8 @@ export default async ({ id, video_id, format }: Input) => {
 		await uploadStatus.send(id, { video_id, status: 'end' });
 
 		fs.rmSync(`${process.cwd()}/.cache/${video_id}`, { force: true, recursive: true });
+
+		await rawAudio({ id: video_id });
 	} catch (e) {
 		db.updateTable('videos').where('id', '=', video_id).set({ status: 'failed' });
 		throw e;

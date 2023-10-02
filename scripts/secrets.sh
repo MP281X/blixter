@@ -43,6 +43,7 @@ spec:
     POSTGRES_URL: $(echo -n $K8S_POSTGRES_URL | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
     S3_KEY: $(echo -n $K8S_S3_KEY | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
     S3_SECRET: $(echo -n $K8S_S3_SECRET | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
+    OPEN_AI: $(echo -n $K8S_OPEN_AI | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
 
 ---
 #? cron-jobs
@@ -74,5 +75,6 @@ spec:
     S3_KEY: $(echo -n $K8S_S3_KEY | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
     S3_SECRET: $(echo -n $K8S_S3_SECRET | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
     SALT: $(echo -n $K8S_SALT | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
+    OPEN_AI: $(echo -n $K8S_OPEN_AI | tr -d '\r' | kubeseal --controller-name=sealed-secrets --raw --scope cluster-wide)
 
 " > ../k8s/secrets.yaml

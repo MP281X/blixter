@@ -2,6 +2,7 @@ import { redis } from 'cache';
 import { db, newUser } from 'db';
 import { deleteFile, moveFile } from 's3';
 import { jobs } from 'jobs-handler';
+import { generateEmbedding } from 'ai';
 
 // reset
 console.log('db:reset');
@@ -51,8 +52,10 @@ const video = await db
 		user_id: user!.id,
 		description: 'demo short video'
 	})
-	.returning('id')
+	.returning(['id', 'title'])
 	.executeTakeFirst();
+
+await generateEmbedding('videos', video!.id, video!.title);
 
 await db
 	.insertInto('views')
@@ -78,5 +81,6 @@ await moveFile({ id: 'video_short.mp4', type: 'demo' }, { id: video!.id, type: '
 
 console.log('job-hanlder:seeding');
 await jobs.rawVideo.default({ id: user!.id, format: 'mp4', video_id: video!.id });
+await jobs.rawAudio.default({ id: video!.id });
 
 process.exit(0);
