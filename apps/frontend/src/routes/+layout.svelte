@@ -1,7 +1,6 @@
 <script lang="ts">
 	import '../app.css';
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 
 	let profileDialog = false;
@@ -21,25 +20,21 @@
 		{#if $page.route.id === '/(main)' || $page.route.id === '/profile'}
 			<div class="flex h-full w-[70%] border-4 border-black sm:w-[50%]">
 				<input type="text" bind:value={searchQuery} class="placeholder-grey w-full bg-none px-2 text-2xl outline-none" placeholder="search" />
-				<button
-					on:click={() => {
-						searchQuery = '';
-						goto('?');
-					}}
-					class="mr-1 flex aspect-square h-full items-center justify-center">
+				<a href="?" data-sveltekit-reload class="mr-1 flex aspect-square h-full items-center justify-center">
 					<span class="i-ph-eraser-bold text-2xl" />
-				</button>
-				<button
-					on:click={() => goto(`?q=${searchQuery.replaceAll('=', '').replaceAll('?', '')}`)}
-					class="flex aspect-square h-full items-center justify-center bg-black">
+				</a>
+				<a
+					class="flex aspect-square h-full items-center justify-center bg-black"
+					data-sveltekit-reload
+					href="?q={searchQuery.replaceAll('=', '').replaceAll('?', '')}">
 					<span class="i-ph-file-search-bold text-2xl text-white" />
-				</button>
+				</a>
 			</div>
 		{/if}
 
 		{#if $page.route.id !== '/auth'}
 			<nav class="flex items-center justify-center space-x-5">
-				<a href="/upload/video" class="i-ph-film-slate-bold"> </a>
+				<a href="/upload" class="i-ph-film-slate-bold"> </a>
 				<button class="i-ph-user-focus-bold" on:click={() => (profileDialog = !profileDialog)} />
 			</nav>
 		{/if}

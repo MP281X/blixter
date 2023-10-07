@@ -46,16 +46,9 @@ const user = await db
 
 const video = await db
 	.insertInto('videos')
-	.values({
-		id: 'd2f3681b-b4b2-42c5-a30b-0d2b10dc47c7',
-		title: 'short video',
-		user_id: user!.id,
-		description: 'demo short video'
-	})
+	.values({ id: 'd2f3681b-b4b2-42c5-a30b-0d2b10dc47c7', user_id: user!.id })
 	.returning(['id', 'title'])
 	.executeTakeFirst();
-
-await generateEmbedding('videos', video!.id, video!.title);
 
 await db
 	.insertInto('views')

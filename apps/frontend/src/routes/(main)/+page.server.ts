@@ -9,10 +9,9 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		const queryRes = await searchEmbedding('videos', query);
 		if (queryRes.length === 0) return { videos: [], user: locals.user.username };
 
-		console.log(queryRes);
 		const videos = await db
 			.selectFrom('videos')
-			.where('videos.status', '=', 'converted')
+			.where('videos.status', '=', 'categorized')
 			.where('videos.id', 'in', queryRes)
 			.limit(20)
 			.innerJoin('users', 'users.id', 'videos.user_id')
@@ -33,7 +32,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	const videos = await db
 		.selectFrom('videos')
-		.where('videos.status', '=', 'converted')
+		.where('videos.status', '=', 'categorized')
 		.limit(20)
 		.innerJoin('users', 'users.id', 'videos.user_id')
 		.select([

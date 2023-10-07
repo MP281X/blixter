@@ -10,7 +10,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const profile = (await db.selectFrom('users').where('id', '=', locals.user.id).select(['username', 'email', 'verified', 'id']).executeTakeFirst())!;
 	const videos = await db
 		.selectFrom('videos')
-		.where('status', '=', 'converted')
+		.where('status', '=', 'categorized')
 		.where('user_id', '=', locals.user.id)
 		.innerJoin('users', 'users.id', 'videos.user_id')
 		.select([

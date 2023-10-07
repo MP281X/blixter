@@ -13,7 +13,7 @@ export default async () => {
 		const timeDifference = Math.floor((new Date().getTime() - file.uploadedAt.getTime()) / (1000 * 60 * 60));
 		if (timeDifference < 4) continue;
 
-		const converted = await db.selectFrom('videos').where('id', '=', file.id).where('status', '!=', 'converted').executeTakeFirst();
+		const converted = await db.selectFrom('videos').where('id', '=', file.id).where('status', '!=', 'categorized').executeTakeFirst();
 		if (!converted) continue;
 
 		await deleteFile('images', file.id);

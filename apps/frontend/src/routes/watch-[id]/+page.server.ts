@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const video = await db
 		.selectFrom('videos')
 		.where('videos.id', '=', id)
-		.where('videos.status', '=', 'converted')
+		.where('videos.status', '=', 'categorized')
 		.innerJoin('users', 'users.id', 'videos.user_id')
 		.select([
 			'videos.title',

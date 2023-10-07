@@ -13,6 +13,31 @@ export const transcribe = async (id: string) => {
 	return res.text;
 };
 
+export const summarize = async (text: string) => {
+	const res = await openai.chat.completions.create({
+		model: 'gpt-3.5-turbo',
+		messages: [
+			{
+				role: 'system',
+				content: `
+        Given the following transcribed text from a video's audio, 
+        generate a title (max 10 characters) and description (max 100 words) for the video. 
+        Provide the output in JSON format with two keys: "title" and "description". 
+        The title and description should be concise, 
+        focusing solely on the main topic of the video. 
+        Avoid explicitly mentioning that it's a video and exclude any reference to 
+        followers or additional information not provided in the transcribed text.`
+			},
+			{ role: 'user', content: text }
+		]
+	});
+
+	const { title, description } = JSON.parse(res.choices[0]?.message.content!) as { title: string; description: string };
+	return { title, description };
+};
+
+export const categorize = async () => {};
+
 type Embedding = 'videos';
 export const generateEmbedding = async (type: Embedding, id: string, input: string) => {
 	try {

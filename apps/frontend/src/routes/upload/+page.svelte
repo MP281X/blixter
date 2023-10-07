@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+
 	export let data;
 
 	let files: FileList;
@@ -69,7 +71,11 @@
 				Select File
 			</label>
 		{:else if uploadState === 'uploaded'}
-			<a href={`/upload/${videoInfo.format}-${videoInfo.id}`} class="btn-animation w-full border-2 py-1 text-center">Next</a>
+			<form use:enhance action="?/info" method="post" novalidate class="w-full">
+				<input type="text" name="_id" value={videoInfo.id} hidden />
+				<input type="text" name="_format" value={videoInfo.format} hidden />
+				<button type="submit" class="btn-animation w-full border-2 py-1 text-center">Confirm</button>
+			</form>
 		{:else if uploadState === 'uploading'}
 			<svg class="h-7 w-7 animate-spin text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
 				<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

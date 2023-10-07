@@ -1,6 +1,7 @@
 import fs from 'fs';
-import { transcribe, generateEmbedding } from 'ai';
+import { transcribe, generateEmbedding, summarize } from 'ai';
 import { download } from 's3';
+import { db } from 'db';
 
 type Input = {
 	id: string;
@@ -22,8 +23,25 @@ export default async ({ id }: Input) => {
 		const text = await transcribe(id);
 		log(id, 'converted the audio file');
 
-		await generateEmbedding('videos', id, text);
+		// summarize the content
+		const { title, description } = await summarize(text);
+		log(id, 'summarized the video content');
+
+		await generateEmbedding('videos', id, title);
+		await generateEmbedding('videos', id, description);
 		log(id, 'generated the embeddings');
+
+		await db
+			.updateTable('videos')
+			.where('id', '=', id)
+			.set({
+				title: title,
+				description: description,
+				status: 'categorized'
+			})
+			.executeTakeFirstOrThrow();
+
+		log(id, 'updated the status');
 
 		fs.rmSync(`${process.cwd()}/.cache/${id}`, { force: true, recursive: true });
 	} catch (e) {

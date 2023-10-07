@@ -1,6 +1,6 @@
 import type { ColumnType } from 'kysely';
 
-export type ConversionStatus = 'converted' | 'converting' | 'failed' | 'to_upload' | 'uploaded';
+export type ConversionStatus = 'categorized' | 'converted' | 'converting' | 'failed' | 'to_upload' | 'uploaded';
 
 export type Generated<T> = T extends ColumnType<infer S, infer I, infer U> ? ColumnType<S, I | undefined, U> : ColumnType<T, T | undefined, T>;
 
@@ -32,8 +32,8 @@ export interface Users {
 export interface Videos {
 	id: Generated<string>;
 	user_id: string;
-	title: string;
-	description: string;
+	title: Generated<string>;
+	description: Generated<string>;
 	duration: Generated<number>;
 	status: Generated<ConversionStatus>;
 	created_at: Generated<Timestamp>;
