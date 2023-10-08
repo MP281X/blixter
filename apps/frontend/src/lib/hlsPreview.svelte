@@ -39,7 +39,7 @@
 		video.addEventListener('timeupdate', () => {
 			if (!video || !video.currentTime) {
 				currentTime = 0;
-				remaining = 0;
+				remaining = data.duration;
 				return;
 			}
 
@@ -48,7 +48,7 @@
 			else currentTime = Math.round(time);
 
 			const remaining_time = Math.round(data.duration - video.currentTime);
-			if (remaining_time < 0) remaining = 0;
+			if (remaining_time <= 0) remaining = data.duration;
 			else remaining = remaining_time;
 		});
 	});

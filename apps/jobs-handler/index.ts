@@ -1,6 +1,5 @@
 import { rejects } from 'assert';
 import * as jobs from './src/index.g.ts';
-export * as jobs from './src/index.g.ts';
 import { createClient } from 'redis';
 
 const redis = createClient({ url: Bun.env.REDIS_URL! });
@@ -16,7 +15,7 @@ Object.entries(jobs).forEach(async ([jobName, jobHandler]) => {
 	console.log(`loaded '${jobName}'`);
 
 	while (true) {
-		const raw_data = await redis_queue.BRPOPLPUSH(jobName, `${jobName}_temp`, 0);
+		const raw_data = await redis_queue.BRPOPLPUSH(`jobs:${jobName}`, `jobs:${jobName}_temp`, 0);
 		if (!raw_data) continue;
 
 		try {

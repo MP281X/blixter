@@ -28,8 +28,7 @@ export const summarize = async (text: string) => {
         transcribed text.
 
         Additionally, please remove any greetings, information about other videos, community-
-        related content, news references, links to other videos, and maintain the same level of
-        formality as used in the input.`
+        related content, news references, links to other videos.`
 			},
 			{ role: 'user', content: text.toString() }
 		]
@@ -59,7 +58,7 @@ export const generateEmbedding = async (type: Embedding, id: string, input: stri
 			'$.text': { type: SchemaFieldTypes.TEXT, AS: 'text' },
 			'$.embedding': {
 				type: SchemaFieldTypes.VECTOR,
-				ALGORITHM: VectorAlgorithms.FLAT,
+				ALGORITHM: VectorAlgorithms.HNSW,
 				DIM: 1536,
 				DISTANCE_METRIC: 'COSINE',
 				TYPE: 'FLOAT32',
@@ -87,10 +86,9 @@ export const searchEmbedding = async (type: Embedding, input: string, limit: num
 		DIALECT: 2
 	});
 
-	// console.log(res.documents.map(d => ({ score: d.value.score, id: d.value.id })));
-	let ids = res.documents.filter(d => (d.value.score as number) < 0.2).map(d => (d.value.id as string).replace(`embeddings:${type}:`, ''));
+	let ids = res.documents.filter(d => Math.abs(d.value.score as number) < 0.5).map(d => (d.value.id as string).replace(`embeddings:${type}:`, ''));
 	ids = [...new Set(ids)];
 
-	await redis.set(`embeddings:cache:${type}:${hash}`, JSON.stringify(ids), { EX: 60 * 5 });
+	// await redis.set(`embeddings:cache:${type}:${hash}`, JSON.stringify(ids), { EX: 60 * 5 });
 	return ids;
 };

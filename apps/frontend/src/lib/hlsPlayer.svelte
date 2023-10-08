@@ -56,7 +56,7 @@
 <button
 	bind:this={video_player}
 	class="bg-orange relative flex aspect-video items-center justify-center border-4 border-black"
-	style="height: min(75svh, (100svw - 2.5rem)/16*9)"
+	style="height: min(75svh, (100svw - 2.5rem)/16*9); max-height: 100svh; max-width: 100svw;"
 	on:mouseenter={() => (menu = true)}
 	on:mouseleave={() => (menu = false)}>
 	<div class="border-orange absolute aspect-square h-[40%] animate-spin rounded-full border-[4px] border-t-black" />

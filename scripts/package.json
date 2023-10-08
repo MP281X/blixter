@@ -5,7 +5,6 @@
 		"secrets": "bash ./secrets.sh"
 	},
 	"dependencies": {
-		"jobs-handler": "workspace:*",
 		"cache": "workspace:*",
 		"s3": "workspace:*",
 		"db": "workspace:*",

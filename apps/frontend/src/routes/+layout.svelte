@@ -7,7 +7,10 @@
 	let searchQuery: string = '';
 
 	onMount(() => (searchQuery = $page.url.searchParams.get('q') ?? ''));
-	page.subscribe(() => (profileDialog = false));
+	page.subscribe(() => {
+		searchQuery = $page.url.searchParams.get('q') ?? '';
+		profileDialog = false;
+	});
 </script>
 
 <main class="font-regular grid min-h-[100dvh] grid-rows-[3.75rem_1fr] scroll-smooth text-xl">
@@ -18,18 +21,17 @@
 		</a>
 
 		{#if $page.route.id === '/(main)' || $page.route.id === '/profile'}
-			<div class="flex h-full w-[70%] border-4 border-black sm:w-[50%]">
+			<form
+				class="flex h-full w-[70%] border-4 border-black sm:w-[50%]"
+				on:submit={() => (window.location.href = `?q=${searchQuery.replaceAll('=', '').replaceAll('?', '')}`)}>
 				<input type="text" bind:value={searchQuery} class="placeholder-grey w-full bg-none px-2 text-2xl outline-none" placeholder="search" />
 				<a href="?" data-sveltekit-reload class="mr-1 flex aspect-square h-full items-center justify-center">
 					<span class="i-ph-eraser-bold text-2xl" />
 				</a>
-				<a
-					class="flex aspect-square h-full items-center justify-center bg-black"
-					data-sveltekit-reload
-					href="?q={searchQuery.replaceAll('=', '').replaceAll('?', '')}">
+				<button type="submit" class="flex aspect-square h-full items-center justify-center bg-black">
 					<span class="i-ph-file-search-bold text-2xl text-white" />
-				</a>
-			</div>
+				</button>
+			</form>
 		{/if}
 
 		{#if $page.route.id !== '/auth'}

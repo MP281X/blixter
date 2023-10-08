@@ -13,7 +13,7 @@ for (const file of fileList) {
 
 	generatedData.unshift(`import type ${jobName}_type from '${basePath}/${file}'`);
 	generatedData.push(
-		`export const ${jobName} = async (arg0: Parameters<typeof ${jobName}_type>[number]) => await redis.LPUSH("${queueName}", JSON.stringify(arg0));`
+		`export const ${jobName} = async (arg0: Parameters<typeof ${jobName}_type>[number]) => await redis.LPUSH("jobs:${queueName}", JSON.stringify(arg0));`
 	);
 
 	console.log(`generated handler for the job '${jobName}'`);

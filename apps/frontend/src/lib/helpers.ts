@@ -1,16 +1,15 @@
 export const formatDate = (date: Date) => {
 	const currentYear = new Date().getFullYear();
-	const year = date.getFullYear();
 	const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aaug', 'Sep', 'Oct', 'Nov', 'Dec'];
 	const daysDifference = Math.floor((new Date().getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
 	const hoursDifference = Math.floor((new Date().getTime() - date.getTime()) / (1000 * 60 * 60));
 	const minutesDifference = Math.floor((new Date().getTime() - date.getTime()) / (1000 * 60));
 
-	const fix = (x: number) => (x < 0 ? 0 : x);
-	if (year !== currentYear) return `${fix(currentYear - year)}y  ago`;
-	if (minutesDifference < 60) return `${fix(minutesDifference)}m ago`;
-	if (hoursDifference < 24) return `${fix(minutesDifference)}h ago`;
-	else if (daysDifference < 15) return `${fix(minutesDifference)}d  ago`;
+	if (date.getFullYear() !== currentYear) return `${currentYear - date.getFullYear()}y  ago`;
+	if (minutesDifference < 0) return '0m ago';
+	if (minutesDifference < 60) return `${minutesDifference}m ago`;
+	if (hoursDifference < 24) return `${hoursDifference}h ago`;
+	else if (daysDifference < 15) return `${daysDifference}d  ago`;
 	else return `${date.getDate()} ${months[date.getMonth()]}`;
 };
 
