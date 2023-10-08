@@ -85,7 +85,7 @@
 		</div>
 
 		<div class="flex w-full flex-col items-start justify-center">
-			<div class="font-bold">{data.title}</div>
+			<div class="font-bold">{data.title.length > 20 ? `${data.title.substring(0, 17)}...` : data.title}</div>
 			<div class="text-base">{formatViews(data.views)} • {formatDate(data.created_at)}</div>
 		</div>
 	</div>
