@@ -25,6 +25,7 @@ export default async ({ id }: Input) => {
 
 		// summarize the content
 		const { title, description } = await summarize(text);
+
 		log(id, 'summarized the video content');
 
 		await generateEmbedding('videos', id, title);

@@ -2,7 +2,6 @@ import { redis } from 'cache';
 import { db, newUser } from 'db';
 import { deleteFile, moveFile } from 's3';
 import { jobs } from 'jobs-handler';
-import { generateEmbedding } from 'ai';
 
 // reset
 console.log('db:reset');
@@ -44,11 +43,7 @@ const user = await db
 	.returning('id')
 	.executeTakeFirst();
 
-const video = await db
-	.insertInto('videos')
-	.values({ id: 'd2f3681b-b4b2-42c5-a30b-0d2b10dc47c7', user_id: user!.id })
-	.returning(['id', 'title'])
-	.executeTakeFirst();
+const video = await db.insertInto('videos').values({ id: crypto.randomUUID(), user_id: user!.id }).returning(['id', 'title']).executeTakeFirst();
 
 await db
 	.insertInto('views')
@@ -70,7 +65,7 @@ await db
 	.executeTakeFirst();
 
 console.log('s3:seeding');
-await moveFile({ id: 'video_short.mp4', type: 'demo' }, { id: video!.id, type: 'raw_videos' });
+await moveFile({ id: 'video_medium.mp4', type: 'demo' }, { id: video!.id, type: 'raw_videos' });
 
 console.log('job-hanlder:seeding');
 await jobs.rawVideo.default({ id: user!.id, format: 'mp4', video_id: video!.id });

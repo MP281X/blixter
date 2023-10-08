@@ -15,25 +15,33 @@ export const transcribe = async (id: string) => {
 
 export const summarize = async (text: string) => {
 	const res = await openai.chat.completions.create({
-		model: 'gpt-3.5-turbo',
+		model: 'gpt-3.5-turbo-16k',
 		messages: [
 			{
 				role: 'system',
 				content: `
-        Given the following transcribed text from a video's audio, 
-        generate a title (max 10 characters) and description (max 100 words) for the video. 
-        Provide the output in JSON format with two keys: "title" and "description". 
-        The title and description should be concise, 
-        focusing solely on the main topic of the video. 
-        Avoid explicitly mentioning that it's a video and exclude any reference to 
-        followers or additional information not provided in the transcribed text.`
+        Given the following transcribed text from a video's audio, generate a title (max 2 words) 
+        and description (max 100 words) for the video. Provide the output in a valid JSON
+        object with two keys: "title" and "description". The title and description should be concise,
+        focusing solely on the main topic of the video. Avoid explicitly mentioning that it's a video
+        and exclude any reference to followers or additional information not provided in the
+        transcribed text.
+
+        Additionally, please remove any greetings, information about other videos, community-
+        related content, news references, links to other videos, and maintain the same level of
+        formality as used in the input.`
 			},
-			{ role: 'user', content: text }
+			{ role: 'user', content: text.toString() }
 		]
 	});
 
-	const { title, description } = JSON.parse(res.choices[0]?.message.content!) as { title: string; description: string };
-	return { title, description };
+	let output = { title: 'err', description: 'err' };
+	try {
+		output = JSON.parse(res.choices[0]?.message.content!) as { title: string; description: string };
+	} catch (e) {
+		console.log('invalid json output');
+	}
+	return output;
 };
 
 export const categorize = async () => {};
