@@ -26,7 +26,6 @@
 		"db": "workspace:*",
 		"jobs": "workspace:*",
 		"s3": "workspace:*",
-		"realtime": "workspace:*",
-		"ai": "workspace:*"
+		"realtime": "workspace:*"
 	}
 }

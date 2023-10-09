@@ -1,7 +1,20 @@
 import fs from 'fs';
-import { openai, redis, hashText } from './src/helpers';
-import { SchemaFieldTypes, VectorAlgorithms } from 'redis';
+import crypto from 'crypto';
+import { OpenAI } from 'openai';
 
+const env = typeof Bun !== 'undefined' ? Bun.env : process.env;
+
+let openai: OpenAI;
+if (env.OPEN_AI) openai = new OpenAI({ apiKey: env.OPEN_AI! });
+
+export const hashText = (input: string) => {
+	input = input.trim().toLowerCase();
+
+	const hash = crypto.createHash('md5');
+	hash.update(input);
+
+	return hash.digest('hex');
+};
 export const transcribe = async (id: string) => {
 	const path = `${process.cwd()}/.cache/${id}`;
 
@@ -20,75 +33,28 @@ export const summarize = async (text: string) => {
 			{
 				role: 'system',
 				content: `
-        Given the following transcribed text from a video's audio, generate a title (max 2 words) 
-        and description (max 100 words) for the video. Provide the output in a valid JSON
-        object with two keys: "title" and "description". The title and description should be concise,
+        Given the following transcribed text from a video's audio, generate the title (max 2 words), 
+        the description (max 100 words) and the category (max 1 word) for the video. Provide the output in a valid JSON
+        object with three keys: "title", "description" and "category". The title and the description should be concise,
         focusing solely on the main topic of the video. Avoid explicitly mentioning that it's a video
         and exclude any reference to followers or additional information not provided in the
         transcribed text.
 
-        Additionally, please remove any greetings, information about other videos, community-
-        related content, news references, links to other videos.`
+        The category of the video should be one of those "gaming", "vlogs", "food", "tecnology", "comedy", "education",
+        "music", "animals", "sport", "entrateinment", "art", "language"
+        The output should not contain any greetings, information about other videos, community 
+        related content, news references, links to other videos and other things not related to the main
+        topic of the video.`
 			},
 			{ role: 'user', content: text.toString() }
 		]
 	});
 
-	let output = { title: 'err', description: 'err' };
+	let output = { title: 'err', description: 'err', category: 'err' };
 	try {
-		output = JSON.parse(res.choices[0]?.message.content!) as { title: string; description: string };
+		output = JSON.parse(res.choices[0]?.message.content!) as { title: string; description: string; category: string };
 	} catch (e) {
 		console.log('invalid json output');
 	}
 	return output;
-};
-
-export const categorize = async () => {};
-
-type Embedding = 'videos';
-export const generateEmbedding = async (type: Embedding, id: string, input: string) => {
-	try {
-		await redis.ft.dropIndex(`${type}-idx`);
-	} catch (e: any) {}
-
-	await redis.ft.create(
-		`${type}-idx`,
-		{
-			'$.id': { type: SchemaFieldTypes.TEXT, AS: 'id' },
-			'$.text': { type: SchemaFieldTypes.TEXT, AS: 'text' },
-			'$.embedding': {
-				type: SchemaFieldTypes.VECTOR,
-				ALGORITHM: VectorAlgorithms.HNSW,
-				DIM: 1536,
-				DISTANCE_METRIC: 'COSINE',
-				TYPE: 'FLOAT32',
-				AS: 'embedding'
-			}
-		},
-		{ ON: 'JSON', PREFIX: `embeddings:${type}:` }
-	);
-
-	const { embedding } = (await openai.embeddings.create({ model: 'text-embedding-ada-002', input })).data[0]!;
-	await redis.json.set(`embeddings:${type}:${crypto.randomUUID()}`, '$', { id, embedding, text: input });
-};
-
-export const searchEmbedding = async (type: Embedding, input: string, limit: number = 20) => {
-	const hash = hashText(input);
-	const data = await redis.get(`embeddings:cache:${type}:${hash}`);
-	if (data) return JSON.parse(data) as string[];
-
-	const { embedding } = (await openai.embeddings.create({ model: 'text-embedding-ada-002', input })).data[0]!;
-
-	const res = await redis.ft.search(`${type}-idx`, `*=>[KNN ${limit} @embedding $query_vector AS score]`, {
-		PARAMS: { query_vector: Buffer.from(new Float32Array(embedding).buffer) },
-		RETURN: ['id', 'score'],
-		SORTBY: 'score',
-		DIALECT: 2
-	});
-
-	let ids = res.documents.filter(d => Math.abs(d.value.score as number) < 0.5).map(d => (d.value.id as string).replace(`embeddings:${type}:`, ''));
-	ids = [...new Set(ids)];
-
-	// await redis.set(`embeddings:cache:${type}:${hash}`, JSON.stringify(ids), { EX: 60 * 5 });
-	return ids;
 };

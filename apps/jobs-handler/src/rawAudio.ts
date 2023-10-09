@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { transcribe, generateEmbedding, summarize } from 'ai';
+import { transcribe, summarize } from 'ai';
 import { download } from 's3';
 import { db } from 'db';
 
@@ -24,13 +24,9 @@ export default async ({ id }: Input) => {
 		log(id, 'converted the audio file');
 
 		// summarize the content
-		const { title, description } = await summarize(text);
+		const { title, description, category } = await summarize(text);
 
 		log(id, 'summarized the video content');
-
-		await generateEmbedding('videos', id, title);
-		await generateEmbedding('videos', id, description);
-		log(id, 'generated the embeddings');
 
 		await db
 			.updateTable('videos')
@@ -38,6 +34,7 @@ export default async ({ id }: Input) => {
 			.set({
 				title: title,
 				description: description,
+				category: category,
 				status: 'categorized'
 			})
 			.executeTakeFirstOrThrow();

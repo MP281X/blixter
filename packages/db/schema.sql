@@ -29,6 +29,7 @@ create table videos (
   user_id uuid not null,
   title text default '' not null,
   description text default '' not null,
+  category text default '' not null,
   duration integer default 0 not null,
   status conversion_status default 'to_upload' not null,
   created_at timestamp default CURRENT_TIMESTAMP not null,

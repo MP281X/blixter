@@ -34,6 +34,7 @@ export interface Videos {
 	user_id: string;
 	title: Generated<string>;
 	description: Generated<string>;
+	category: Generated<string>;
 	duration: Generated<number>;
 	status: Generated<ConversionStatus>;
 	created_at: Generated<Timestamp>;
