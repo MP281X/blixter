@@ -1,4 +1,4 @@
-import { db, newComment, sql } from 'db';
+import { db, newComment, updateLike, updateWatchTime, sql } from 'db';
 import type { PageServerLoad } from './$types';
 import { error, type Actions, fail } from '@sveltejs/kit';
 import { z } from 'zod';
@@ -65,25 +65,26 @@ export const actions: Actions = {
 	comment: async ({ request, locals, params }) => {
 		const id = z.string().uuid().parse(params.id);
 
-		const { data, errors } = await newComment.validate(request.formData());
+		const { data, errors } = await newComment.query(request.formData(), { user_id: locals.user.id, video_id: id });
 		if (errors) return fail(400, errors);
-
-		const res = await db
-			.insertInto('comments')
-			.values({
-				video_id: id,
-				user_id: locals.user.id,
-				comment: data.comment
-			})
-			.returningAll()
-			.executeTakeFirst();
-		if (!res) return fail(400, { error: 'invalid username or password' });
 
 		await comments.send(id, {
 			user_id: locals.user.id,
 			username: locals.user.username,
-			created_at: res.created_at,
-			comment: res.comment
+			created_at: data.created_at,
+			comment: data.comment
 		});
+	},
+	like: async ({ request, locals, params }) => {
+		const id = z.string().uuid().parse(params.id);
+
+		const { errors } = await updateLike.query(request.formData(), { user_id: locals.user.id, video_id: id });
+		if (errors) return fail(400, errors);
+	},
+	watch_time: async ({ request, locals, params }) => {
+		const id = z.string().uuid().parse(params.id);
+
+		const { errors } = await updateWatchTime.query(request.formData(), { user_id: locals.user.id, video_id: id });
+		if (errors) return fail(400, errors);
 	}
 };
