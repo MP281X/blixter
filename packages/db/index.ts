@@ -47,7 +47,9 @@ export const newComment = validator(
 export const updateLike = validator(
 	'views',
 	'update',
-	{ liked: z.boolean().nullable() },
+	{
+		liked: z.boolean().nullable()
+	},
 	async (db, { liked, user_id, video_id }) => await db.where('user_id', '=', user_id).where('video_id', '=', video_id).set({ liked }).execute()
 );
 
@@ -55,7 +57,9 @@ export const updateLike = validator(
 export const updateWatchTime = validator(
 	'views',
 	'update',
-	{ watch_time: z.number().min(0) },
+	{
+		watch_time: z.number().min(0)
+	},
 	async (db, { user_id, video_id, watch_time }) =>
 		await db.where('user_id', '=', user_id).where('video_id', '=', video_id).set({ watch_time }).execute()
 );

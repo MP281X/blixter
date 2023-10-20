@@ -26,7 +26,14 @@ process.on('exit', () => {
 // type helper (transform the db schema into a zod schema)
 type ValidatorSchema<Table extends keyof DB> = {
 	[K in keyof InsertObject<DB, Table>]+?: z.ZodType<SelectType<DB[Table][K]>>;
-} & Record<`_${string}`, z.ZodType>;
+} & Record<string, z.ZodType>;
+
+// validate that the ValidatorSchema contains only the db keys or keys that start with _
+type ValidateValidatorSchema<Obj extends Record<string, any>, Table extends keyof DB> = {
+	[K in keyof Obj as K extends keyof Partial<Record<keyof InsertObject<DB, Table>, any>> | `_${string}` ? K : never]: any;
+} extends Obj
+	? Obj
+	: never;
 
 // type helper (transform a zod schema into an object)
 type InputSchema<Schema extends ValidatorSchema<any>> = {
@@ -90,7 +97,7 @@ export const validator = <
 >(
 	table: Table,
 	type: Type,
-	validatorSchema: Schema,
+	validatorSchema: Schema extends ValidateValidatorSchema<Schema, Table> ? Schema : never,
 	queryHandler: QueryHandler
 ) => {
 	const schema = z.object(validatorSchema as any);
