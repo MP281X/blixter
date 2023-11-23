@@ -8,10 +8,10 @@ import { ZodError, z } from 'zod';
 type ValidatorSchema<Table extends keyof DB, Req extends 'optional' | 'required'> = Req extends 'required'
 	? {
 			[K in keyof InsertObject<DB, Table>]: z.ZodType<SelectType<DB[Table][K]>>;
-	  }
+	  } & Record<`_${string}`, z.ZodType>
 	: {
 			[K in keyof InsertObject<DB, Table>]+?: z.ZodType<SelectType<DB[Table][K]>>;
-	  };
+	  } & Record<`_${string}`, z.ZodType>;
 
 // type helper (transform a zod schema into an object)
 type InputSchema<Schema extends ValidatorSchema<any, any>> = {
@@ -43,7 +43,7 @@ type ValidatorType<T> = Promise<{ data: T; errors: undefined } | { data: undefin
 export const validator = <Table extends keyof DB, Req extends 'optional' | 'required', Schema extends ValidatorSchema<Table, Req>>(
 	_: Table,
 	__: Req,
-	validatorSchema: Schema
+	validatorSchema: Schema & (Exclude<keyof Schema, `_${string}` | keyof ValidatorSchema<Table, Req>> extends never ? Schema : never)
 ) => {
 	const schema = z.object(validatorSchema as any);
 	const formDefaults = zodDefault(schema.shape);
