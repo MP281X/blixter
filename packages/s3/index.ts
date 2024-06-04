@@ -55,7 +55,7 @@ export const upload = async (type: FileType, name: string, path?: string, abortC
 	const dir = `${process.cwd()}/.cache/${path ?? name}`;
 	if (!fs.statSync(dir).isDirectory()) {
 		const { url } = await uploadUrl(type, name);
-		const res = await fetch(url, { method: 'PUT', body: Bun.file(dir), timeout: false });
+		const res = await fetch(url, { method: 'PUT', body: Bun.file(dir) });
 
 		if (!res.ok) throw new Error('unable to upload the file');
 		fs.rmSync(dir);
@@ -74,7 +74,7 @@ export const upload = async (type: FileType, name: string, path?: string, abortC
 				if (!fs.existsSync(`${dir}/${filename}`)) continue;
 
 				const { url } = await uploadUrl(type, `${name}/${filename}`);
-				const res = await fetch(url, { method: 'PUT', body: Bun.file(`${dir}/${filename}`), timeout: false });
+				const res = await fetch(url, { method: 'PUT', body: Bun.file(`${dir}/${filename}`) });
 				if (res.ok) fs.rmSync(`${dir}/${filename}`);
 			}
 		} catch (e) {}
@@ -85,7 +85,7 @@ export const upload = async (type: FileType, name: string, path?: string, abortC
 		if (fs.statSync(`${dir}/${file}`).isDirectory()) continue;
 
 		const { url } = await uploadUrl(type, `${name}/${file}`);
-		const res = await fetch(url, { method: 'PUT', body: Bun.file(`${dir}/${file}`), timeout: false });
+		const res = await fetch(url, { method: 'PUT', body: Bun.file(`${dir}/${file}`) });
 		if (!res.ok) throw new Error('unable to upload the files');
 
 		fs.rmSync(`${dir}/${file}`);
@@ -107,10 +107,10 @@ export const downloadUrl = async (type: FileType, id: string) => {
 
 export const download = async (type: FileType, id: string, path: string) => {
 	const url = await downloadUrl(type, id);
-	const res = await fetch(url, { timeout: false });
+	const res = await fetch(url);
 	if (!res.ok) throw new Error(`unable to download ${type}:${id}`);
 
-	await writeFile(`${process.cwd()}/.cache/${path}`, await res.arrayBuffer());
+	await writeFile(`${process.cwd()}/.cache/${path}`, (await res.arrayBuffer()) as any);
 };
 
 export const listFiles = async (type: FileType, id: string = '') => {

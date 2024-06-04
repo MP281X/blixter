@@ -7,6 +7,6 @@
 		"../../apps/jobs-handler/src/*.ts"
 	],
 	"dependencies": {
-		"redis": "^4.6.7"
+		"redis": "^4.6.14"
 	}
 }

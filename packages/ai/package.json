@@ -4,7 +4,7 @@
 	"main": "index.ts",
 	"types": "index.ts",
 	"dependencies": {
-		"openai": "^4.11.0",
-		"redis": "^4.6.7"
+		"openai": "^4.47.3",
+		"redis": "^4.6.14"
 	}
 }

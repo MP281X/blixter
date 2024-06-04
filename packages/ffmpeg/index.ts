@@ -10,7 +10,7 @@ export const getVideoInfo = async ({ id, file }: GetVideoInfo) => {
 	);
 
 	if ((await ffprobe.exited) !== 0) throw new Error('unable to get the file info');
-	const fileInfo = (await new Response(ffprobe.stdout).json())['streams'][0];
+	const fileInfo = ((await new Response(ffprobe.stdout).json()) as any)['streams'][0];
 
 	return {
 		resolution: fileInfo['height'],
@@ -42,7 +42,7 @@ export const convertVideo = async ({ id, file, resolution, tot_frames, status }:
 		{ stderr: 'pipe', stdout: 'ignore', cwd: `${process.cwd()}/.cache/${id}` }
 	);
 
-	for await (const chunk of cmd.stderr) {
+	for await (const chunk of cmd.stderr as any) {
 		let log = new TextDecoder().decode(chunk).split('\n');
 		log.forEach(async txt => {
 			if (!txt || txt.trim() === '') return;

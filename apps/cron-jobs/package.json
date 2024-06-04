@@ -11,8 +11,8 @@
 		"build": "bun build index.ts --outdir ./build --target bun",
 		"preview": "bun run build && bun ./build/index.js"
 	},
-	"dependencies": {
-		"redis": "^4.6.7",
+	"devDependencies": {
+		"redis": "^4.6.14",
 		"cache": "workspace:*",
 		"jobs": "workspace:*",
 		"s3": "workspace:*",

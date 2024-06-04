@@ -15,6 +15,7 @@ const log = async (title: string, input: string | Uint8Array | ReadableStream<Ui
 			if (txt.includes('VITE') || txt.includes('use --host to expose') || txt.includes('✨')) return;
 			if (txt.includes('./.svelte-kit/tsconfig.json') || txt.includes('╵') || txt.includes('tsconfig.json:2:12:')) return;
 			if (txt.includes('NOTICE:') || txt.includes('DETAIL:') || txt.includes('drop cascade')) return;
+			if (txt.includes('bun build') || txt.includes('vite build')) return;
 
 			if (color === 91 && Bun.argv[2]! !== 'dev') {
 				console.error(`\x1b[${color}m${title} ➜ \x1b[0m${txt}`);

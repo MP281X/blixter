@@ -4,7 +4,7 @@ import { downloadUrl } from 's3';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const unauthorized = () => {
-		event.cookies.delete('auth_token');
+		event.cookies.delete('auth_token', { path: '/' });
 		throw redirect(303, 'auth');
 	};
 
