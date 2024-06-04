@@ -1,19 +1,20 @@
 import { db, sql } from 'db';
 import type { PageServerLoad } from './$types';
 import { z } from 'zod';
-import { searchEmbedding } from 'ai';
+// import { searchEmbedding } from 'ai';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const query = z.optional(z.string().max(20)).parse(url.searchParams.get('q') ?? undefined);
 	if (query && query.trim() !== '') {
-		const queryRes = await searchEmbedding('videos', query);
-		if (queryRes.length === 0) return { videos: [], user: locals.user.username };
+		// const queryRes = await searchEmbedding('videos', query);
+		// if (queryRes.length === 0) return { videos: [], user: locals.user.username };
 
-		console.log(queryRes);
+		// console.log(queryRes);
 		const videos = await db
 			.selectFrom('videos')
 			.where('videos.status', '=', 'converted')
-			.where('videos.id', 'in', queryRes)
+			// .where('videos.title', 'in', queryRes)
+			.where('videos.title', 'ilike', query)
 			.limit(20)
 			.innerJoin('users', 'users.id', 'videos.user_id')
 			.select([
